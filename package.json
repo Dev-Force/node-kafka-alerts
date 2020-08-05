@@ -1,0 +1,23 @@
+{
+  "name": "vehicle-history-mvp",
+  "version": "1.0.0",
+  "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dev-Force/vehicle-history-mvp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dev-Force/vehicle-history-mvp/issues"
+  },
+  "homepage": "https://github.com/Dev-Force/vehicle-history-mvp#readme",
+  "devDependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
+}
