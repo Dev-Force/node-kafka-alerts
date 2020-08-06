@@ -1,45 +1,19 @@
-interface Handler {
-    handle: (cmd: object) => void
-}
+// Keep these for reflect.
+import 'reflect-metadata';
+import './command-handlers/command-handler.constants';
 
-class RegisterVehicleCommand {
-
-    public name: string;
-
-}
-
-class RegisterVehicleCommandHandler implements Handler {
-
-    handle(cmd: RegisterVehicleCommand) {
-        console.log(cmd.name);
-    }
-
-}
-
-class Bus {
-
-    private registryMap = {};
-
-    register(commandClassName: string, commandHandler: Handler) {
-        this.registryMap[commandClassName] = commandHandler;
-    }
-
-    dispatch(command): void {
-        const commandHandler = this.registryMap[command.constructor.name];
-        if (commandHandler == null) {
-            throw new Error('no handler available');
-        }
-
-        commandHandler.handle(command);
-    }
-
-}
+import { Bus } from "./buses/bus";
+import { RegisterVehicleCommandHandler } from "./command-handlers/register-vehicle-command-handler";
+import { RegisterVehicleCommand } from "./commands/register-vehicle-command";
 
 // INIT BUS
 const commandBus = new Bus();
-commandBus.register(RegisterVehicleCommand['name'], new RegisterVehicleCommandHandler());
+const registerVehicleCommandHandler = new RegisterVehicleCommandHandler();
+commandBus.registerDecorated(registerVehicleCommandHandler);
 
 // EXECUTE COMMAND
 const cmd = new RegisterVehicleCommand();
 cmd.name = 'this should be printed';
 commandBus.dispatch(cmd);
+
+// import './command-handlers/register-vehicle-command-handler'; 
