@@ -6,7 +6,7 @@ import { HandlesCommand } from "./command-handler.decorator";
 export class RegisterVehicleCommandHandler implements CommandHandler {
 
     handle(cmd: RegisterVehicleCommand) {
-        console.log(cmd.name); // this should be printed
+        console.log(cmd.name); // this should be printed.
     }
 
 }

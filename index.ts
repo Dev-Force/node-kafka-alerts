@@ -15,5 +15,3 @@ commandBus.registerDecorated(registerVehicleCommandHandler);
 const cmd = new RegisterVehicleCommand();
 cmd.name = 'this should be printed';
 commandBus.dispatch(cmd);
-
-// import './command-handlers/register-vehicle-command-handler'; 
