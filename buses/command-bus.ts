@@ -2,7 +2,7 @@ import { CommandHandler } from "../command-handlers/command-handler.interface";
 import { CommandMarker } from "../commands/command.interface";
 import { COMMAND_HANDLER_METADATA_COMMAND } from "../command-handlers/command-handler.constants";
 
-export class Bus {
+export class CommandBus {
 
     private registryMap = {};
 

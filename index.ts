@@ -2,12 +2,12 @@
 import 'reflect-metadata';
 import './command-handlers/command-handler.constants';
 
-import { Bus } from "./buses/bus";
+import { CommandBus } from "./buses/command-bus";
 import { RegisterVehicleCommandHandler } from "./command-handlers/register-vehicle-command-handler";
 import { RegisterVehicleCommand } from "./commands/register-vehicle-command";
 
 // INIT BUS
-const commandBus = new Bus();
+const commandBus = new CommandBus();
 const registerVehicleCommandHandler = new RegisterVehicleCommandHandler();
 commandBus.registerDecorated(registerVehicleCommandHandler);
 
