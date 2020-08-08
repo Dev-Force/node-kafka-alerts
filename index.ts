@@ -1,10 +1,10 @@
 // Keep these for reflect.
 import 'reflect-metadata';
-import './command-handlers/command-handler.constants';
+import './interface-adapters/command-handlers/command-handler.constants';
 
-import { CommandBus } from "./buses/command-bus";
-import { RegisterVehicleCommandHandler } from "./command-handlers/register-vehicle-command-handler";
-import { RegisterVehicleCommand } from "./commands/register-vehicle-command";
+import { CommandBus } from "./infra/buses/command-bus";
+import { RegisterVehicleCommandHandler } from "./interface-adapters/command-handlers/register-vehicle-command-handler";
+import { RegisterVehicleCommand } from "./domain/commands/register-vehicle-command";
 
 // INIT BUS
 const commandBus = new CommandBus();
