@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/command-handlers/command-handler.constants';
 import { AnyClass } from '../../domain/any-class-type';
 

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { CommandHandler } from "../../interface-adapters/command-handlers/command-handler.interface";
 import { CommandMarker } from "../../domain/commands/command.interface";
 import { COMMAND_HANDLER_METADATA_COMMAND } from "../../interface-adapters/command-handlers/command-handler.constants";
