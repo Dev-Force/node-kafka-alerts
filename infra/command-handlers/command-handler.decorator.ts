@@ -1,5 +1,5 @@
 import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/command-handlers/command-handler.constants';
-import { AnyClass } from '../../types/any-class';
+import { AnyClass } from '../../domain/any-class-type';
 
 export const HandlesCommand = (command: AnyClass): ClassDecorator => {
     return (target: object) => {

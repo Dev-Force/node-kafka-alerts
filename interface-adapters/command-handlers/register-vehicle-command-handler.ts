@@ -1,6 +1,6 @@
 import { CommandHandler } from "./command-handler.interface";
 import { RegisterVehicleCommand } from "../../domain/commands/register-vehicle-command";
-import { HandlesCommand } from "../../infra/command-handler.decorator";
+import { HandlesCommand } from "../../infra/command-handlers/command-handler.decorator";
 
 @HandlesCommand(RegisterVehicleCommand)
 export class RegisterVehicleCommandHandler implements CommandHandler {

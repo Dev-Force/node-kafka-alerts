@@ -4,7 +4,9 @@
   "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --inspect=5858 -r ts-node/register ./index.ts",
+    "start:watch": "nodemon",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
