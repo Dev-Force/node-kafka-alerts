@@ -16,7 +16,12 @@ export class CommandBus {
             throw Error(`Handler ${handler.constructor.name} is not decorated properly.`);
         }
 
-        this.registryMap[commandClass.name] = handler;
+        const commandClassName = commandClass.name;
+        if (this.registryMap[commandClassName] != null) {
+            throw Error(`Handler for ${commandClassName} is already registered.`)
+        } 
+
+        this.registryMap[commandClassName] = handler;
     }
 
     dispatch(command: CommandMarker): void {
