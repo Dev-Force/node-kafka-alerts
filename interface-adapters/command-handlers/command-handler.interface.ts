@@ -1,3 +1,3 @@
 export interface CommandHandler {
-    handle: (cmd: object) => void
+  handle: (cmd: object) => void;
 }

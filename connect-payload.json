@@ -1,14 +1,14 @@
 {
-    "name":"vehicles-connector",
-    "config":{
-       "connector.class":"io.debezium.connector.postgresql.PostgresConnector",
-       "database.hostname":"postgres",
-       "database.port":"5432",
-       "database.user":"postgres",
-       "database.password":"postgres",
-       "database.dbname":"postgres",
-       "database.server.name":"fullfillment",
-       "table.whitelist":"public.vehicle_events",
-       "plugin.name":"pgoutput"
-    }
+  "name": "vehicles-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "postgres",
+    "database.server.name": "fullfillment",
+    "table.whitelist": "public.vehicle_events",
+    "plugin.name": "pgoutput"
+  }
 }

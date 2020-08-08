@@ -11,5 +11,5 @@ commandBus.registerDecorated(registerVehicleCommandHandler);
 
 // EXECUTE COMMAND
 const cmd = new RegisterVehicleCommand();
-cmd.name = 'this should be printed';
+cmd.name = "this should be printed";
 commandBus.dispatch(cmd);

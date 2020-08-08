@@ -1,1 +1,1 @@
-export interface CommandMarker { }  
+export interface CommandMarker {}

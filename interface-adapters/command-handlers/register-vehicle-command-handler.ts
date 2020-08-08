@@ -4,9 +4,7 @@ import { HandlesCommand } from "../../infra/command-handlers/command-handler.dec
 
 @HandlesCommand(RegisterVehicleCommand)
 export class RegisterVehicleCommandHandler implements CommandHandler {
-
-    handle(cmd: RegisterVehicleCommand) {
-        console.log(cmd.name); // this should be printed.
-    }
-
+  handle(cmd: RegisterVehicleCommand) {
+    console.log(cmd.name); // this should be printed.
+  }
 }
