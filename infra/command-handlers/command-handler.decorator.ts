@@ -6,4 +6,3 @@ export const HandlesCommand = (command: AnyClass): ClassDecorator => {
         Reflect.defineMetadata(COMMAND_HANDLER_METADATA_COMMAND, command, target);
     };
 };
-  

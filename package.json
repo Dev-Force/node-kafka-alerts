@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node --inspect=5858 -r ts-node/register ./index.ts",
     "start:watch": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register **/*.test.ts",
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,11 @@
   },
   "homepage": "https://github.com/Dev-Force/vehicle-history-mvp#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/mocha": "^8.0.1",
+    "chai": "^4.2.0",
+    "mocha": "^8.1.1",
+    "nyc": "^15.1.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
