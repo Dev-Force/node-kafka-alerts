@@ -8,7 +8,9 @@
     "start:watch": "nodemon",
     "build": "tsc",
     "test": "mocha -r ts-node/register **/*.test.ts",
-    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier --write ."
   },
   "repository": {
     "type": "git",
