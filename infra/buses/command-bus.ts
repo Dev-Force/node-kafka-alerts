@@ -18,7 +18,7 @@ export class CommandBus {
 
         const commandClassName = commandClass.name;
         if (this.registryMap[commandClassName] != null) {
-            throw Error(`Handler for ${commandClassName} is already registered.`)
+            throw Error(`Handler for ${commandClassName} command is already registered.`)
         } 
 
         this.registryMap[commandClassName] = handler;
