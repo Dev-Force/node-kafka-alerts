@@ -1,3 +1,3 @@
-interface UseCaseExecutor<Input, Output> {
+export interface UseCaseExecutor<Input, Output> {
   execute(input: Input): Output;
 }

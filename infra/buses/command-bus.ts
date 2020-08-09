@@ -1,7 +1,7 @@
-import "reflect-metadata";
-import { ICommandHandler } from "../../interface-adapters/command-handlers/command-handler.interface";
-import { ICommand } from "../../domain/commands/command.interface";
-import { COMMAND_HANDLER_METADATA_COMMAND } from "../../interface-adapters/command-handlers/command-handler.constants";
+import 'reflect-metadata';
+import { ICommandHandler } from '../../interface-adapters/command-handlers/command-handler.interface';
+import { ICommand } from '../../domain/commands/command.interface';
+import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/command-handlers/command-handler.constants';
 
 export class CommandBus {
   private registryMap = {};
@@ -34,7 +34,7 @@ export class CommandBus {
   dispatch(command: ICommand): void {
     const commandHandler = this.registryMap[command.constructor.name];
     if (commandHandler == null) {
-      throw new Error("no handler available");
+      throw new Error('no handler available');
     }
 
     commandHandler.handle(command);
