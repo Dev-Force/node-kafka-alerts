@@ -11,7 +11,7 @@
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier --write .",
-    "eslint": "eslint"
+    "eslint": "eslint ."
   },
   "repository": {
     "type": "git",
