@@ -11,7 +11,7 @@
     "index.ts",
     "infra/**/*.ts",
     "interface-adapters/**/*.ts",
-    "usecases/**/*.ts",
+    "use-cases/**/*.ts",
     "domain/**/*.ts"
   ],
   "exclude": ["node_modules", ".vscode"]

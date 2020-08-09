@@ -1,5 +1,8 @@
-import { CommandMarker } from "./command.interface";
+import { ICommand } from "./command.interface";
 
-export class RegisterVehicleCommand implements CommandMarker {
-  public name: string;
+export class RegisterVehicleCommand implements ICommand {
+  constructor(public vin: string, public color: string) {
+    this.vin = vin;
+    this.color = color;
+  }
 }
