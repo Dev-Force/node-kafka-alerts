@@ -6,11 +6,11 @@ import { COMMAND_HANDLER_METADATA_COMMAND } from "../../interface-adapters/comma
 export class CommandBus {
   private registryMap = {};
 
-  register(className: string, handler: CommandHandler) {
+  register(className: string, handler: CommandHandler): void {
     this.registryMap[className] = handler;
   }
 
-  registerDecorated(handler: CommandHandler) {
+  registerDecorated(handler: CommandHandler): void {
     const commandClass = Reflect.getMetadata(
       COMMAND_HANDLER_METADATA_COMMAND,
       handler.constructor

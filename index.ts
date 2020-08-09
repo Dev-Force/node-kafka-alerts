@@ -1,4 +1,5 @@
-import "./bootstrap-deps";
+import "reflect-metadata";
+import "./interface-adapters/command-handlers/command-handler.constants";
 
 import { CommandBus } from "./infra/buses/command-bus";
 import { RegisterVehicleCommandHandler } from "./interface-adapters/command-handlers/register-vehicle-command-handler";

@@ -10,7 +10,8 @@
     "test": "mocha -r ts-node/register **/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier --write ."
+    "prettier:format": "prettier --write .",
+    "eslint": "eslint"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,11 @@
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
     "chai": "^4.2.0",
+    "eslint": "^7.6.0",
+    "eslint-plugin-import": "^2.22.0",
     "husky": "^4.2.5",
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
@@ -38,7 +43,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run prettier:check"
+      "pre-commit": "npm run prettier:check && npm run eslint"
     }
   }
 }

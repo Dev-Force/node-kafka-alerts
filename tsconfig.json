@@ -7,6 +7,8 @@
     "experimentalDecorators": true
   },
   "include": [
+    ".eslintrc.js",
+    "index.ts",
     "infra/**/*.ts",
     "interface-adapters/**/*.ts",
     "usecases/**/*.ts",
