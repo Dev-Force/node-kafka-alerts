@@ -16,6 +16,8 @@ services:
       - ZOOKEEPER_CONNECT=zookeeper:2181
   postgres:
     image: debezium/postgres:12-alpine
+    volumes:
+      - ./scripts/postgres:/docker-entrypoint-initdb.d/
     ports:
       - 5432:5432
     environment:
