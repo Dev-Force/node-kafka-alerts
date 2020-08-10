@@ -4,14 +4,14 @@
   "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
   "main": "index.js",
   "scripts": {
-    "start": "node --inspect=5858 -r ts-node/register ./index.ts",
+    "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
     "start:watch": "nodemon",
     "build": "tsc",
-    "test": "mocha -r ts-node/register **/*.test.ts",
+    "test": "mocha -r ts-node/register src/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier --write .",
-    "eslint": "eslint ."
+    "eslint": "eslint ./src"
   },
   "repository": {
     "type": "git",

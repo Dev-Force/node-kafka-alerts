@@ -8,11 +8,11 @@
   },
   "include": [
     ".eslintrc.js",
-    "index.ts",
-    "infra/**/*.ts",
-    "interface-adapters/**/*.ts",
-    "use-cases/**/*.ts",
-    "domain/**/*.ts"
+    "src/index.ts",
+    "src/infra/**/*.ts",
+    "src/interface-adapters/**/*.ts",
+    "src/use-cases/**/*.ts",
+    "src/domain/**/*.ts"
   ],
   "exclude": ["node_modules", ".vscode"]
 }

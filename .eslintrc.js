@@ -16,14 +16,14 @@ module.exports = {
       'error',
       {
         zones: [
-          { target: './domain', from: './use-cases' },
-          { target: './domain', from: './interface-adapters' },
-          { target: './domain', from: './infra' },
+          { target: './src/domain', from: './src/use-cases' },
+          { target: './src/domain', from: './src/interface-adapters' },
+          { target: './src/domain', from: './src/infra' },
 
-          { target: './use-cases', from: './interface-adapters' },
-          { target: './use-cases', from: './infra' },
+          { target: './src/use-cases', from: './src/interface-adapters' },
+          { target: './src/use-cases', from: './src/infra' },
 
-          { target: './interface-adapters', from: './infra' },
+          { target: './src/interface-adapters', from: './src/infra' },
         ],
       },
     ],
