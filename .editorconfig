@@ -1,6 +1,6 @@
 root = true
 
-[{domain,infra,interface-adapters,use-cases}/**.{ts,json,js}]
+[src/{domain,infra,interface-adapters,use-cases}/**.{ts,json,js}]
 end_of_line = crlf
 charset = utf-8
 trim_trailing_whitespace = true
