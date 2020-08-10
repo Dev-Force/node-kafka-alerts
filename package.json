@@ -4,13 +4,14 @@
   "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
   "main": "index.js",
   "scripts": {
+    "start:dist": "node ./dist/index.js",
     "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
     "start:watch": "nodemon",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
-    "prettier:check": "prettier --check .",
-    "prettier:format": "prettier --write .",
+    "prettier:check": "prettier --check ./src",
+    "prettier:format": "prettier --write ./src",
     "eslint": "eslint ./src"
   },
   "repository": {
@@ -30,11 +31,13 @@
     "@typescript-eslint/parser": "^3.8.0",
     "chai": "^4.2.0",
     "eslint": "^7.6.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.2.5",
     "mocha": "^8.1.1",
     "nyc": "^15.1.0",
-    "prettier": "2.0.5",
+    "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },

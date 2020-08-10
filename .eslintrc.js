@@ -4,13 +4,14 @@ module.exports = {
     'plugin:import/typescript',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'prettier', 
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'prettier'],
   rules: {
     'import/no-restricted-paths': [
       'error',
@@ -27,6 +28,8 @@ module.exports = {
         ],
       },
     ],
+    'no-console': 1, // Means warning
+    'prettier/prettier': 2, // Means error
   },
   env: {
     node: true,
