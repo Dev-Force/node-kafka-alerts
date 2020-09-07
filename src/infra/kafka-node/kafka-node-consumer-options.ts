@@ -1,5 +1,5 @@
 export const kafkaNodeConsumerOptions = {
-  kafkaHost: 'kafka:29092', // connect directly to kafka broker (instantiates a KafkaClient)
+  kafkaHost: 'kafka:9092', // connect directly to kafka broker (instantiates a KafkaClient)
   batch: undefined, // put client batch settings if you need them
   ssl: true, // optional (defaults to false) or tls options hash
   groupId: 'ClassifiedsNotificationsGroup',

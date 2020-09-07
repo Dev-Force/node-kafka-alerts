@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { IDispatcher } from '../buses/dispatcher.interface';
 import { ICommand } from '../../domain/commands/command.interface';
-import { RegisterVehicleCommand } from '../../domain/commands/register-vehicle-command';
+import { SendEmailCommand } from '../../domain/commands/send-email-command';
 import * as bodyParser from 'body-parser';
 
 export class ExpressServer {
@@ -17,8 +17,13 @@ export class ExpressServer {
     this.app.use(bodyParser.urlencoded({ extended: true }));
 
     this.app.post('/', (req, res) => {
-      const { vin, color } = req.body;
-      const registerVehicleCommand = new RegisterVehicleCommand(vin, color);
+      const { from, to, template, payload } = req.body;
+      const registerVehicleCommand = new SendEmailCommand(
+        from,
+        to,
+        template,
+        payload
+      );
 
       try {
         this.commandBus.dispatch(registerVehicleCommand);

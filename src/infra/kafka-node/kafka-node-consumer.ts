@@ -1,19 +1,21 @@
 import { ConsumerGroup } from 'kafka-node';
-import { JsonMessageHandler } from '../../domain/json-message-handler';
 import { kafkaNodeConsumerOptions } from './kafka-node-consumer-options';
+import { SendEmailCommand } from '../../domain/commands/send-email-command';
+import { ICommand } from '../../domain/commands/command.interface';
+import { IDispatcher } from '../buses/dispatcher.interface';
 
 export class KafkaNodeConsumer {
   private consumerGroup: ConsumerGroup;
 
   constructor(
     topics: string | string[],
-    private jsonMessageHandler: JsonMessageHandler
+    private commandBus: IDispatcher<ICommand>
   ) {
     this.consumerGroup = new ConsumerGroup(
       kafkaNodeConsumerOptions as any,
       topics
     );
-    this.jsonMessageHandler = jsonMessageHandler;
+    this.commandBus = commandBus;
   }
 
   public consume(): void {
@@ -21,7 +23,12 @@ export class KafkaNodeConsumer {
       const val = message.value.toString('utf8');
       const json = JSON.parse(val);
 
-      this.jsonMessageHandler.handle(json);
+      if (json.send_email) {
+        const cmd = new SendEmailCommand('from', 'to', 'template', {});
+        return this.commandBus.dispatch(cmd);
+      }
+
+      return;
     });
   }
 }

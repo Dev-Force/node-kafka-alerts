@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   app:
     build:
@@ -25,12 +25,11 @@ services:
 
   kafka:
     image: debezium/kafka:${DEBEZIUM_VERSION}
-    ports:
-      - 9092:9092
     links:
       - zookeeper
     environment:
-      - ZOOKEEPER_CONNECT=zookeeper:2181
+      ZOOKEEPER_CONNECT: zookeeper:2181
+      ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
 
   connect:
     image: debezium/connect:${DEBEZIUM_VERSION}
