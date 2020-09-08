@@ -1,3 +1,3 @@
 export interface IDispatcher<Input> {
-  dispatch(command: Input): void;
+  dispatch(command: Input): Promise<boolean>;
 }

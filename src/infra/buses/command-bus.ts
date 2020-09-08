@@ -31,12 +31,12 @@ export class CommandBus {
     this.registryMap[commandClassName] = handler;
   }
 
-  dispatch(command: ICommand): void {
+  dispatch(command: ICommand): Promise<boolean> {
     const commandHandler = this.registryMap[command.constructor.name];
     if (commandHandler == null) {
       throw new Error('no handler available');
     }
 
-    commandHandler.handle(command);
+    return commandHandler.handle(command);
   }
 }

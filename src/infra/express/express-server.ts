@@ -16,9 +16,9 @@ export class ExpressServer {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
 
-    this.app.post('/', (req, res) => {
+    this.app.post('/send-email', (req, res) => {
       const { from, to, template, payload } = req.body;
-      const registerVehicleCommand = new SendEmailCommand(
+      const sendEmailCommand = new SendEmailCommand(
         from,
         to,
         template,
@@ -26,8 +26,9 @@ export class ExpressServer {
       );
 
       try {
-        this.commandBus.dispatch(registerVehicleCommand);
-        res.send('command succeded!');
+        this.commandBus.dispatch(sendEmailCommand).then(() => {
+          res.send('command succeded!');
+        });
       } catch (err) {
         res.send(err.message);
       }
