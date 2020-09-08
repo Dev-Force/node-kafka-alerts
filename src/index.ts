@@ -1,11 +1,10 @@
 import 'reflect-metadata';
-// import './interface-adapters/command-handlers/command-handler.constants';
 
 import { CommandBus } from './infra/buses/command-bus';
 import { SendEmailCommandHandler } from './interface-adapters/command-handlers/send-email.command-handler';
 import { ExpressServer } from './infra/express/express-server';
 import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
-import { KafkaNodeConsumer } from './infra/kafka-node/kafka-node-consumer';
+import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
 
 const emailSender = {
   sendEmail(
@@ -41,7 +40,7 @@ const expressApp = new ExpressServer(commandBus);
 expressApp.configure();
 expressApp.listen();
 
-const notificationConsumer = new KafkaNodeConsumer(
+const notificationConsumer = new KafkaJSConsumer(
   'notification-alerts',
   commandBus
 );
