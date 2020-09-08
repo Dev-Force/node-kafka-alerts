@@ -7,6 +7,7 @@
     "start:dist": "node ./dist/index.js",
     "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
     "start:watch": "nodemon",
+    "start:dev": "ts-node src/index.ts",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
@@ -46,6 +47,7 @@
   "dependencies": {
     "@types/express": "^4.17.7",
     "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "kafka-node": "^5.0.0",
     "kafkajs": "^1.12.0",

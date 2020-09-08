@@ -1,0 +1,7 @@
+FROM node:14.4.0
+ENV NODE_ENV=development
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . ./
+CMD npm run start:dev
