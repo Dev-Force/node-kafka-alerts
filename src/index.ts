@@ -5,6 +5,11 @@ import { SendEmailCommandHandler } from './interface-adapters/command-handlers/s
 import { ExpressServer } from './infra/express/express-server';
 import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
+import { DotEnv } from './infra/dotenv/dotenv';
+
+const confGetter = new DotEnv();
+confGetter.initialize();
+const config = confGetter.getConfig();
 
 const emailSender = {
   sendEmail(
@@ -41,7 +46,7 @@ expressApp.configure();
 expressApp.listen();
 
 const notificationConsumer = new KafkaJSConsumer(
-  'notification-alerts',
+  config.getNotificationTopic(),
   commandBus
 );
 
