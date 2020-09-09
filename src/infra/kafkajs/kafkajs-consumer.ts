@@ -2,6 +2,7 @@ import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
 import { SendEmailCommand } from '../../domain/commands/send-email-command';
 import { ICommand } from '../../domain/commands/command.interface';
 import { IDispatcher } from '../buses/dispatcher.interface';
+import { NotificationMessage } from '../../domain/notification-message';
 
 export class KafkaJSConsumer {
   private consumer: Consumer;
@@ -20,6 +21,7 @@ export class KafkaJSConsumer {
 
   public async consume(): Promise<void> {
     const { consumer, topic } = this;
+    console.log('topic', topic);
 
     // Consuming
     await consumer.connect();
@@ -36,10 +38,15 @@ export class KafkaJSConsumer {
         });
 
         const val = message.value.toString('utf8');
-        const json = JSON.parse(val);
+        const json: NotificationMessage = JSON.parse(val);
 
-        if (json.send_email) {
-          const cmd = new SendEmailCommand('from', 'to', 'template', {});
+        if (json.channel === 'EMAIL') {
+          const cmd = new SendEmailCommand(
+            'noreply@devforce.gr',
+            json.recipient,
+            'template name',
+            json.unmappedData
+          );
           await this.commandBus.dispatch(cmd);
           return;
         }

@@ -6,22 +6,26 @@ import { ExpressServer } from './infra/express/express-server';
 import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
 import { DotEnv } from './infra/dotenv/dotenv';
+import { SendGridClient } from './infra/sendgrid/sendgrid-client';
 
 const confGetter = new DotEnv();
 confGetter.initialize();
 const config = confGetter.getConfig();
 
-const emailSender = {
-  sendEmail(
-    from: string,
-    to: string,
-    compiledPayload: string,
-    isHtml: boolean
-  ): Promise<boolean> {
-    console.log('sending email');
-    return Promise.resolve(true);
-  },
-};
+// const emailSender = {
+//   sendEmail(
+//     from: string,
+//     to: string,
+//     compiledPayload: string,
+//     isHtml: boolean
+//   ): Promise<boolean> {
+//     console.log('sending email');
+//     return Promise.resolve(true);
+//   },
+// };
+
+const emailSender = new SendGridClient(config.getEmailSenderAPIKey());
+
 const templateCompiler = {
   compile(template: string, payload: Record<string, unknown>): string {
     console.log('compiling email');
