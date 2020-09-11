@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { ICommandHandler } from './command-handler.interface';
 import { SendEmailCommand } from '../../domain/commands/send-email-command';
 import { CommandHandler } from './command-handler.decorator';
