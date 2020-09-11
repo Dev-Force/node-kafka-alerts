@@ -1,6 +1,7 @@
 export class Config {
   private notificationTopic: string;
   private emailSenderAPIKey: string;
+  private templatePath: string;
 
   public setNotificationTopic(notTopic: string): Config {
     this.notificationTopic = notTopic;
@@ -18,5 +19,14 @@ export class Config {
 
   public getEmailSenderAPIKey(): string {
     return this.emailSenderAPIKey;
+  }
+
+  public setTemplatePath(templatePath: string): Config {
+    this.templatePath = templatePath;
+    return this;
+  }
+
+  public getTemplatePath(): string {
+    return this.templatePath;
   }
 }

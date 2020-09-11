@@ -44,7 +44,7 @@ export class KafkaJSConsumer {
           const cmd = new SendEmailCommand(
             'noreply@devforce.gr',
             json.recipient,
-            'template name',
+            json.template,
             json.unmappedData
           );
           await this.commandBus.dispatch(cmd);

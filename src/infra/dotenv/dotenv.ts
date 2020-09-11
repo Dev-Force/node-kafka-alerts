@@ -1,5 +1,4 @@
 import { config } from 'dotenv';
-import { Domain } from 'domain';
 import { Config } from '../../domain/config';
 
 export class DotEnv {
@@ -10,6 +9,7 @@ export class DotEnv {
   public getConfig(): Config {
     return new Config()
       .setNotificationTopic(process.env.NOTIFICATION_TOPIC)
-      .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY);
+      .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
+      .setTemplatePath(process.env.TEMPLATE_PATH);
   }
 }

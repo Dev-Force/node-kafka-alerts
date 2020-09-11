@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { ICommandHandler } from './command-handler.interface';
 import { SendEmailCommand } from '../../domain/commands/send-email-command';
 import { CommandHandler } from './command-handler.decorator';
@@ -8,15 +9,31 @@ import { SendEmailPayload } from '../../domain/send-email-payload';
 export class SendEmailCommandHandler
   implements ICommandHandler<SendEmailCommand> {
   constructor(
-    private usecase: UseCaseExecutor<SendEmailPayload, Promise<boolean>>
+    private usecase: UseCaseExecutor<SendEmailPayload, Promise<boolean>>,
+    private fsAsync: any,
+    private templatePath: string
   ) {
     this.usecase = usecase;
+    this.fsAsync = fsAsync;
+    this.templatePath = templatePath;
   }
 
-  handle(cmd: SendEmailCommand): Promise<boolean> {
+  async handle(cmd: SendEmailCommand): Promise<boolean> {
+    const { from, to, template, payload } = cmd;
+
+    console.log(`${this.templatePath}/${template}`);
+    const fileTemplate = await this.fsAsync.readFile(
+      `${this.templatePath}/${template}`,
+      {
+        encoding: 'utf-8',
+      }
+    );
+
     console.log('executing usecase');
+    console.log(fileTemplate);
+
     return this.usecase.execute(
-      new SendEmailPayload(cmd.from, cmd.to, cmd.template, cmd.payload)
+      new SendEmailPayload(from, to, fileTemplate, payload)
     );
   }
 }

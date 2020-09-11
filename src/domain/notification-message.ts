@@ -5,6 +5,7 @@ export class NotificationMessage {
   public recipient: string;
   public eventType: string;
   public description: string;
+  public template: string;
   public machineId: string;
   public userId: string;
   public unmappedData: Record<string, unknown>;
