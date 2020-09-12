@@ -17,10 +17,12 @@ export class ExpressServer {
     this.app.use(bodyParser.urlencoded({ extended: true }));
 
     this.app.post('/send-email', async (req, res) => {
-      const { from, to, template, payload } = req.body;
+      const { from, to, subject, isHTML, template, payload } = req.body;
       const sendEmailCommand = new SendEmailCommand(
         from,
         to,
+        subject,
+        isHTML,
         template,
         payload
       );

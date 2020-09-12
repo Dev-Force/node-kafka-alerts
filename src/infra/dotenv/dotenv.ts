@@ -10,6 +10,7 @@ export class DotEnv {
     return new Config()
       .setNotificationTopic(process.env.NOTIFICATION_TOPIC)
       .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
-      .setTemplatePath(process.env.TEMPLATE_PATH);
+      .setTemplatePath(process.env.TEMPLATE_PATH)
+      .setKafkaGroupId(process.env.KAFKA_GROUP_ID);
   }
 }

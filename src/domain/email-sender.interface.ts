@@ -2,7 +2,8 @@ export interface EmailSender {
   sendEmail(
     from: string,
     to: string,
-    compiledPayload: string,
-    isHtml: boolean
+    subject: string,
+    isHtml: boolean,
+    compiledPayload: string
   ): Promise<boolean>;
 }

@@ -5,10 +5,14 @@ services:
       context: ./
       dockerfile: Dockerfile.dev
     volumes:
-      - node_modules/
       - ./:/app
+      - /app/node_modules/
     ports:
       - 3000:3000
+    depends_on: 
+    - kafka
+    - connect
+    - postgres
 
   postgres:
     image: debezium/postgres:12-alpine
@@ -34,6 +38,8 @@ services:
     environment:
       ZOOKEEPER_CONNECT: zookeeper:2181
       ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
 
   connect:
     image: debezium/connect:${DEBEZIUM_VERSION}
@@ -48,3 +54,5 @@ services:
       - CONFIG_STORAGE_TOPIC=my_connect_configs
       - OFFSET_STORAGE_TOPIC=my_connect_offsets
       - STATUS_STORAGE_TOPIC=my_connect_statuses
+    depends_on:
+    - kafka

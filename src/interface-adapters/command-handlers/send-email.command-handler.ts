@@ -18,9 +18,8 @@ export class SendEmailCommandHandler
   }
 
   async handle(cmd: SendEmailCommand): Promise<boolean> {
-    const { from, to, template, payload } = cmd;
+    const { from, to, subject, isHTML, template, payload } = cmd;
 
-    console.log(`${this.templatePath}/${template}`);
     const fileTemplate = await this.fsAsync.readFile(
       `${this.templatePath}/${template}`,
       {
@@ -29,10 +28,9 @@ export class SendEmailCommandHandler
     );
 
     console.log('executing usecase');
-    console.log(fileTemplate);
 
     return this.usecase.execute(
-      new SendEmailPayload(from, to, fileTemplate, payload)
+      new SendEmailPayload(from, to, subject, isHTML, fileTemplate, payload)
     );
   }
 }

@@ -2,6 +2,7 @@ export class Config {
   private notificationTopic: string;
   private emailSenderAPIKey: string;
   private templatePath: string;
+  private kakfaGroupId: string;
 
   public setNotificationTopic(notTopic: string): Config {
     this.notificationTopic = notTopic;
@@ -28,5 +29,14 @@ export class Config {
 
   public getTemplatePath(): string {
     return this.templatePath;
+  }
+
+  public setKafkaGroupId(kakfaGroupId: string): Config {
+    this.kakfaGroupId = kakfaGroupId;
+    return this;
+  }
+
+  public getKafkaGroupId(): string {
+    return this.kakfaGroupId;
   }
 }

@@ -13,13 +13,16 @@ export class SendEmailUseCase
   ) {}
 
   execute(sendEmailPayload: SendEmailPayload): Promise<boolean> {
-    const from = sendEmailPayload.from;
-    const to = sendEmailPayload.to;
-    const template = sendEmailPayload.template;
-    const payload = sendEmailPayload.payload;
+    const { from, to, subject, isHTML, template, payload } = sendEmailPayload;
 
     console.log('compiling and sending email');
     const compiledPayload = this.templateCompiler.compile(template, payload);
-    return this.emailSender.sendEmail(from, to, compiledPayload, true);
+    return this.emailSender.sendEmail(
+      from,
+      to,
+      subject,
+      isHTML,
+      compiledPayload
+    );
   }
 }

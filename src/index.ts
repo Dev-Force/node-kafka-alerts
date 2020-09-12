@@ -44,6 +44,7 @@ expressApp.listen();
 
 const notificationConsumer = new KafkaJSConsumer(
   config.getNotificationTopic(),
+  config.getKafkaGroupId(),
   commandBus
 );
 

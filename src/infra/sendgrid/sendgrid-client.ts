@@ -6,16 +6,17 @@ export class SendGridClient implements EmailSender {
     sendgrid.setApiKey(apiKey);
   }
 
-  sendEmail(
+  async sendEmail(
     from: string,
     to: string,
-    compiledPayload: string,
-    isHtml: boolean
+    subject: string,
+    isHtml: boolean,
+    compiledPayload: string
   ): Promise<boolean> {
     const msg: any = {
       to,
       from,
-      subject: 'Sending with SendGrid is Fun',
+      subject,
     };
 
     if (isHtml) {
@@ -24,6 +25,7 @@ export class SendGridClient implements EmailSender {
       msg.text = compiledPayload;
     }
 
-    return sendgrid.send(msg).then(() => true);
+    await sendgrid.send(msg);
+    return true;
   }
 }
