@@ -1,4 +1,5 @@
 import * as sendgrid from '@sendgrid/mail';
+import { MailDataRequired } from '@sendgrid/mail';
 import { EmailSender } from '../../domain/email-sender.interface';
 
 export class SendGridClient implements EmailSender {
@@ -13,10 +14,11 @@ export class SendGridClient implements EmailSender {
     isHtml: boolean,
     compiledPayload: string
   ): Promise<boolean> {
-    const msg: any = {
+    const msg: MailDataRequired = {
       to,
       from,
       subject,
+      content: undefined,
     };
 
     if (isHtml) {
