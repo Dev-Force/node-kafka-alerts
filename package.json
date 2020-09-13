@@ -1,5 +1,5 @@
 {
-  "name": "vehicle-history-mvp",
+  "name": "node-kafka-alerts",
   "version": "1.0.0",
   "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
   "main": "index.js",
@@ -8,6 +8,7 @@
     "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
     "start:watch": "nodemon",
     "start:dev": "ts-node src/index.ts",
+    "pm2": "pm2 start processes.json --no-daemon",
     "build": "tsc",
     "test": "mocha -r ts-node/register src/**/*.test.ts",
     "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
@@ -41,6 +42,7 @@
     "mocha": "^8.1.1",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
+    "pm2": "^4.4.1",
     "prettier": "^2.0.5",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
