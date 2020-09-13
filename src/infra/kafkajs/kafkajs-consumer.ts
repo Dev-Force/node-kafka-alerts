@@ -1,4 +1,4 @@
-import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
+import { Consumer, EachMessagePayload } from 'kafkajs';
 import { SendEmailCommand } from '../../domain/commands/send-email-command';
 import { ICommand } from '../../domain/commands/command.interface';
 import { IDispatcher } from '../buses/dispatcher.interface';
@@ -7,22 +7,15 @@ import { NotificationMessage } from '../../domain/notification-message';
 export class KafkaJSConsumer {
   private consumer: Consumer;
   private topic: string;
-  private groupId: string;
   private commandBus: IDispatcher<ICommand>;
 
   constructor(
     topic: string,
-    groupId: string,
+    consumer: Consumer,
     commandBus: IDispatcher<ICommand>
   ) {
-    const kafka = new Kafka({
-      clientId: 'my-app',
-      brokers: ['kafka:9092'],
-    });
-
-    this.consumer = kafka.consumer({ groupId });
+    this.consumer = consumer;
     this.topic = topic;
-    this.groupId = groupId;
     this.commandBus = commandBus;
   }
 

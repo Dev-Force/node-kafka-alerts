@@ -3,6 +3,9 @@ import 'reflect-metadata';
 import * as fs from 'fs';
 import * as hbs from 'handlebars';
 import * as path from 'path';
+import * as util from 'util';
+
+import { Kafka } from 'kafkajs';
 
 import { CommandBus } from './infra/buses/command-bus';
 import { SendEmailCommandHandler } from './interface-adapters/command-handlers/send-email.command-handler';
@@ -13,7 +16,6 @@ import { DotEnv } from './infra/dotenv/dotenv';
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
 import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 
-import * as util from 'util';
 const readFile = util.promisify(fs.readFile);
 const promisifiedFs = { readFile };
 
@@ -42,9 +44,13 @@ const expressApp = new ExpressServer(commandBus);
 expressApp.configure();
 expressApp.listen();
 
+const kafka = new Kafka({
+  clientId: 'my-app',
+  brokers: [`${config.getKakfaHost}:${config.getKakfaPort()}`],
+});
 const notificationConsumer = new KafkaJSConsumer(
   config.getNotificationTopic(),
-  config.getKafkaGroupId(),
+  kafka.consumer({ groupId: config.getKafkaGroupId() }),
   commandBus
 );
 

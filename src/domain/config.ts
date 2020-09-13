@@ -3,6 +3,8 @@ export class Config {
   private emailSenderAPIKey: string;
   private templatePath: string;
   private kakfaGroupId: string;
+  private kakfaHost: string;
+  private kakfaPort: string;
 
   public setNotificationTopic(notTopic: string): Config {
     this.notificationTopic = notTopic;
@@ -38,5 +40,23 @@ export class Config {
 
   public getKafkaGroupId(): string {
     return this.kakfaGroupId;
+  }
+
+  public getKakfaHost(): string {
+    return this.kakfaHost;
+  }
+
+  public setKakfaHost(value: string): Config {
+    this.kakfaHost = value;
+    return this;
+  }
+
+  public getKakfaPort(): string {
+    return this.kakfaPort;
+  }
+
+  public setKakfaPort(value: string): Config {
+    this.kakfaPort = value;
+    return this;
   }
 }
