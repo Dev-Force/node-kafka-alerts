@@ -11,6 +11,7 @@ services:
     ports:
       - 3000:3000
     depends_on: 
-    - kafka
-    - connect
-    - postgres
+      - kafka
+      - connect
+      - postgres
+    restart: always

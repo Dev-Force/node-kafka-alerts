@@ -9,6 +9,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    restart: always
 
   zookeeper:
     image: debezium/zookeeper:${DEBEZIUM_VERSION}
@@ -16,6 +17,7 @@ services:
       - 2181:2181
       - 2888:2888
       - 3888:3888
+    restart: always
 
   kafka:
     image: debezium/kafka:${DEBEZIUM_VERSION}
@@ -26,6 +28,7 @@ services:
       ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
+    restart: always
 
   connect:
     image: debezium/connect:${DEBEZIUM_VERSION}
@@ -42,3 +45,4 @@ services:
       - STATUS_STORAGE_TOPIC=my_connect_statuses
     depends_on:
     - kafka
+    restart: always
