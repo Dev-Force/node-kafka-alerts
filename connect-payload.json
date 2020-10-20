@@ -1,5 +1,5 @@
 {
-  "name": "vehicles-connector",
+  "name": "events-connector",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "postgres",
@@ -8,7 +8,7 @@
     "database.password": "postgres",
     "database.dbname": "postgres",
     "database.server.name": "fullfillment",
-    "table.whitelist": "public.vehicle_events",
+    "table.whitelist": "public.events",
     "plugin.name": "pgoutput"
   }
 }
