@@ -8,7 +8,8 @@ export class DotEnv {
 
   public getConfig(): Config {
     return new Config()
-      .setNotificationTopic(process.env.NOTIFICATION_TOPIC)
+      .setInstantNotificationTopic(process.env.INSTANT_NOTIFICATIONS_TOPIC)
+      .setWindowedNotificationTopic(process.env.WINDOWED_NOTIFICATIONS_TOPIC)
       .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
       .setTemplatePath(process.env.TEMPLATE_PATH)
       .setKafkaGroupId(process.env.KAFKA_GROUP_ID);

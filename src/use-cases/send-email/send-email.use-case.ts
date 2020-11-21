@@ -15,7 +15,7 @@ export class SendEmailUseCase
   execute(sendEmailPayload: SendEmailPayload): Promise<boolean> {
     const { from, to, subject, isHTML, template, payload } = sendEmailPayload;
 
-    console.log('compiling and sending email');
+    // console.log('compiling and sending email');
     const compiledPayload = this.templateCompiler.compile(template, payload);
     return this.emailSender.sendEmail(
       from,

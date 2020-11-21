@@ -1,18 +1,28 @@
 export class Config {
-  private notificationTopic: string;
+  private instantNotificationTopic: string;
+  private windowedNotificationTopic: string;
   private emailSenderAPIKey: string;
   private templatePath: string;
   private kakfaGroupId: string;
   private kakfaHost: string;
   private kakfaPort: string;
 
-  public setNotificationTopic(notTopic: string): Config {
-    this.notificationTopic = notTopic;
+  public setInstantNotificationTopic(instantNotTopic: string): Config {
+    this.instantNotificationTopic = instantNotTopic;
     return this;
   }
 
-  public getNotificationTopic(): string {
-    return this.notificationTopic;
+  public getInstantNotificationTopic(): string {
+    return this.instantNotificationTopic;
+  }
+
+  public setWindowedNotificationTopic(windowedNotTopic: string): Config {
+    this.windowedNotificationTopic = windowedNotTopic;
+    return this;
+  }
+
+  public getWindowedNotificationTopic(): string {
+    return this.windowedNotificationTopic;
   }
 
   public setEmailSenderAPIKey(key: string): Config {

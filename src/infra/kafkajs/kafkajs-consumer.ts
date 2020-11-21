@@ -1,27 +1,36 @@
 import { Consumer, EachMessagePayload } from 'kafkajs';
-import { SendEmailCommand } from '../../domain/commands/send-email-command';
-import { ICommand } from '../../domain/commands/command.interface';
-import { IDispatcher } from '../buses/dispatcher.interface';
+import { ICommand } from '../../domain/command.interface';
+import { ICommandDispatcher } from '../../domain/command-dispatcher.interface';
 import { NotificationMessage } from '../../domain/notification-message';
+import { MessageTransformer } from '../../domain/message-transformer.interface';
+import { IMessageConsumer } from '../../domain/message-consumer.interface';
 
-export class KafkaJSConsumer {
+export class KafkaJSConsumer implements IMessageConsumer {
   private consumer: Consumer;
   private topic: string;
-  private commandBus: IDispatcher<ICommand>;
+  private commandBus: ICommandDispatcher<ICommand>;
+  private messageTransformer: MessageTransformer;
 
   constructor(
     topic: string,
     consumer: Consumer,
-    commandBus: IDispatcher<ICommand>
+    commandBus: ICommandDispatcher<ICommand>,
+    messageTransformer: MessageTransformer
   ) {
     this.consumer = consumer;
     this.topic = topic;
     this.commandBus = commandBus;
+    this.messageTransformer = messageTransformer;
   }
 
-  public async consume(): Promise<void> {
+  consumeWindowedNotifications(): Promise<void> {
+    // console.log('consumeWindowedNotifications is not yet implemented');
+    return;
+  }
+
+  public async consumeInstantNotifications(): Promise<void> {
     const { consumer, topic } = this;
-    console.log('topic', topic);
+    // console.log('topic', topic);
 
     // Consuming
     await consumer.connect();
@@ -29,40 +38,29 @@ export class KafkaJSConsumer {
 
     await consumer.run({
       eachMessage: async (payload: EachMessagePayload): Promise<void> => {
-        const { partition, message } = payload;
+        const { /*partition,*/ message } = payload;
 
-        console.log({
-          partition,
-          offset: message.offset,
-          value: message.value.toString(),
-        });
+        // console.log({
+        //   partition,
+        //   offset: message.offset,
+        //   value: message.value.toString(),
+        // });
 
-        const val = message.value.toString('utf8');
-        const json: NotificationMessage = JSON.parse(val);
+        const notificationMessage: NotificationMessage = this.messageTransformer.bufferMessageToNotificationMessage(
+          message.value
+        );
 
-        const {
-          channel,
-          recipient,
-          subject,
-          isHTML,
-          template,
-          unmappedData,
-        } = json;
-
-        if (channel === 'EMAIL') {
-          const cmd = new SendEmailCommand(
-            'noreply@devforce.gr',
-            recipient,
-            subject,
-            isHTML,
-            template,
-            unmappedData
-          );
-          await this.commandBus.dispatch(cmd);
+        const cmd = this.messageTransformer.createCommandFromNotificationMessage(
+          notificationMessage
+        );
+        if (cmd == null) {
+          // console.log(
+          //   `invalid channel selected: ${notificationMessage.channel}`
+          // );
           return;
         }
 
-        return;
+        await this.commandBus.dispatch(cmd);
       },
     });
   }

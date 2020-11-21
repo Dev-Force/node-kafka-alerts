@@ -18,7 +18,8 @@ export class SendGridClient implements EmailSender {
       to,
       from,
       subject,
-      content: undefined,
+      html: undefined,
+      text: undefined,
     };
 
     if (isHtml) {

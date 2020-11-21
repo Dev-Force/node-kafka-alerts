@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dev-Force/vehicle-history-mvp.git"
+    "url": "git+https://github.com/Dev-Force/node-kafka-alerts.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Dev-Force/vehicle-history-mvp/issues"
+    "url": "https://github.com/Dev-Force/node-kafka-alerts/issues"
   },
-  "homepage": "https://github.com/Dev-Force/vehicle-history-mvp#readme",
+  "homepage": "https://github.com/Dev-Force/node-kafka-alerts#readme",
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/kafka-node": "^3.0.0",

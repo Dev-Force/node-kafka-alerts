@@ -1,6 +1,6 @@
 import { ICommand } from './command.interface';
 
-export class SendEmailCommand implements ICommand {
+export class SendInstantEmailCommand implements ICommand {
   constructor(
     public from: string,
     public to: string,

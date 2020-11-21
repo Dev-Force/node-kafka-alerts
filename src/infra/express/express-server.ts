@@ -1,24 +1,27 @@
 import * as express from 'express';
-import { IDispatcher } from '../buses/dispatcher.interface';
-import { ICommand } from '../../domain/commands/command.interface';
-import { SendEmailCommand } from '../../domain/commands/send-email-command';
+import { ICommandDispatcher } from '../../domain/command-dispatcher.interface';
+import { ICommand } from '../../domain/command.interface';
 import * as bodyParser from 'body-parser';
+import { SendInstantEmailCommand } from '../../domain/send-instant-email-command';
 
 export class ExpressServer {
-  private app: express.Application = express();
+  private app: express.Application;
 
-  constructor(private commandBus: IDispatcher<ICommand>) {
+  constructor(private commandBus: ICommandDispatcher<ICommand>) {
     this.commandBus = commandBus;
+    this.app = express();
   }
 
-  public configure(): void {
-    this.app.use('/', express.static('/'));
-    this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: true }));
+  public init(): void {
+    this.configure();
+    this.registerRoutes();
+    this.listen();
+  }
 
+  public registerRoutes(): void {
     this.app.post('/send-email', async (req, res) => {
       const { from, to, subject, isHTML, template, payload } = req.body;
-      const sendEmailCommand = new SendEmailCommand(
+      const sendInstantEmailCommand = new SendInstantEmailCommand(
         from,
         to,
         subject,
@@ -28,7 +31,7 @@ export class ExpressServer {
       );
 
       try {
-        await this.commandBus.dispatch(sendEmailCommand).then(() => {
+        await this.commandBus.dispatch(sendInstantEmailCommand).then(() => {
           res.send('command succeded!');
         });
       } catch (err) {
@@ -37,9 +40,15 @@ export class ExpressServer {
     });
   }
 
+  public configure(): void {
+    this.app.use('/', express.static('/'));
+    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.urlencoded({ extended: true }));
+  }
+
   public listen(): void {
     this.app.listen(3000, () => {
-      console.log('Server listening on port 3000');
+      // console.log('Server listening on port 3000');
     });
   }
 }
