@@ -5,5 +5,5 @@ export interface EmailSender {
     subject: string,
     isHtml: boolean,
     compiledPayload: string
-  ): Promise<boolean>;
+  ): Promise<void>;
 }

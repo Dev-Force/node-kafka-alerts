@@ -7,19 +7,27 @@ CREATE TABLE users (
 );
 
 CREATE TABLE notification_events (
+  id SERIAL primary key not null,
+  uuid UUID NOT NULL,
+  type TEXT NOT NULL,
+  body JSONB NOT NULL,
+  created_at WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notifications (
     id serial PRIMARY KEY,
-    notification_uuid UUID,
-    group_id UUID,
-    user_id INTEGER,
+    uuid UUID,
+    user_uuid UUID,
     message_payload TEXT,
     channel VARCHAR(50),
     template VARCHAR(255),
     subject VARCHAR(255),
+    status TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_user
-      FOREIGN KEY(user_id) 
-      REFERENCES user_settings(id),
+    CONSTRAINT fk_user_uuid
+      FOREIGN KEY(user_uuid) 
+      REFERENCES users(uuid),
 
     UNIQUE(notification_uuid)
 );

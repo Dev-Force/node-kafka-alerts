@@ -1,6 +1,6 @@
 import * as sendgrid from '@sendgrid/mail';
 import { MailDataRequired } from '@sendgrid/mail';
-import { EmailSender } from '../../domain/email-sender.interface';
+import { EmailSender } from '../../domain/port-interfaces/email-sender.interface';
 
 export class SendGridClient implements EmailSender {
   constructor(apiKey: string) {
@@ -13,7 +13,7 @@ export class SendGridClient implements EmailSender {
     subject: string,
     isHtml: boolean,
     compiledPayload: string
-  ): Promise<boolean> {
+  ): Promise<void> {
     const msg: MailDataRequired = {
       to,
       from,
@@ -29,6 +29,5 @@ export class SendGridClient implements EmailSender {
     }
 
     await sendgrid.send(msg);
-    return true;
   }
 }

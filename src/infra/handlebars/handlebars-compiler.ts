@@ -1,5 +1,5 @@
 import * as hbs from 'handlebars';
-import { Compiler } from '../../domain/compiler.interface';
+import { Compiler } from '../../domain/port-interfaces/compiler.interface';
 
 export class HandlebarsCompiler implements Compiler {
   compile(template: string, payload: Record<string, unknown>): string {

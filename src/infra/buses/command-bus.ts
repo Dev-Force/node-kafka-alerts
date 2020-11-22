@@ -1,16 +1,16 @@
 import 'reflect-metadata';
-import { ICommandHandler } from '../../domain/command-handler.interface';
-import { ICommand } from '../../domain/command.interface';
-import { COMMAND_HANDLER_METADATA_COMMAND } from './command-handlers/command-handler.constants';
+import { ICommandHandler } from '../../domain/port-interfaces/command-handler.interface';
+import { CommandMarker } from '../../interface-adapters/commands/command-marker.interface';
+import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/command-handlers/command-handler.constants';
 
 export class CommandBus {
   private registryMap = {};
 
-  register(className: string, handler: ICommandHandler<ICommand>): void {
+  register(className: string, handler: ICommandHandler<CommandMarker>): void {
     this.registryMap[className] = handler;
   }
 
-  registerDecorated(handler: ICommandHandler<ICommand>): void {
+  registerDecorated(handler: ICommandHandler<CommandMarker>): void {
     const commandClass = Reflect.getMetadata(
       COMMAND_HANDLER_METADATA_COMMAND,
       handler.constructor
@@ -31,7 +31,7 @@ export class CommandBus {
     this.registryMap[commandClassName] = handler;
   }
 
-  dispatch(command: ICommand): Promise<boolean> {
+  dispatch(command: CommandMarker): Promise<boolean> {
     const commandHandler = this.registryMap[command.constructor.name];
     if (commandHandler == null) {
       throw new Error('no handler available');

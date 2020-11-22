@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import {
   FileReader,
   FileReaderOptions,
-} from '../../domain/file-reader.interface';
+} from '../../domain/port-interfaces/file-reader.interface';
 
 export class FSAsync implements FileReader {
   public readFile(path: string, opts: FileReaderOptions): Promise<string> {

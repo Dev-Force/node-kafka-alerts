@@ -1,30 +1,51 @@
 import { Consumer, EachMessagePayload } from 'kafkajs';
-import { ICommand } from '../../domain/command.interface';
-import { ICommandDispatcher } from '../../domain/command-dispatcher.interface';
-import { NotificationMessage } from '../../domain/notification-message';
-import { MessageTransformer } from '../../domain/message-transformer.interface';
-import { IMessageConsumer } from '../../domain/message-consumer.interface';
+import { CommandMarker } from '../../interface-adapters/commands/command-marker.interface';
+import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
+import { NotificationMessageContent } from '../../interface-adapters/notification-message-content';
+import { SendInstantNotificationCommand } from '../../interface-adapters/commands/send-instant-notification-command';
+import { StoreWindowedNotificationCommand } from '../../interface-adapters/commands/store-windowed-notification-command';
 
-export class KafkaJSConsumer implements IMessageConsumer {
+export class KafkaJSConsumer {
   private consumer: Consumer;
   private topic: string;
-  private commandBus: ICommandDispatcher<ICommand>;
-  private messageTransformer: MessageTransformer;
+  private commandBus: CommandDispatcher<CommandMarker>;
 
   constructor(
     topic: string,
     consumer: Consumer,
-    commandBus: ICommandDispatcher<ICommand>,
-    messageTransformer: MessageTransformer
+    commandBus: CommandDispatcher<CommandMarker>
   ) {
     this.consumer = consumer;
     this.topic = topic;
     this.commandBus = commandBus;
-    this.messageTransformer = messageTransformer;
   }
 
-  consumeWindowedNotifications(): Promise<void> {
-    // console.log('consumeWindowedNotifications is not yet implemented');
+  async consumeWindowedNotifications(): Promise<void> {
+    const { consumer, topic } = this;
+    // console.log('topic', topic);
+
+    // Consuming
+    await consumer.connect();
+    await consumer.subscribe({ topic, fromBeginning: true });
+
+    await consumer.run({
+      eachMessage: async (payload: EachMessagePayload): Promise<void> => {
+        const { /*partition,*/ message } = payload;
+
+        // console.log({
+        //   partition,
+        //   offset: message.offset,
+        //   value: message.value.toString(),
+        // });
+
+        await this.commandBus.dispatch(
+          new StoreWindowedNotificationCommand(
+            this.deserializeMessage(JSON.parse(message.value.toString('utf8')))
+          )
+        );
+      },
+    });
+
     return;
   }
 
@@ -46,22 +67,16 @@ export class KafkaJSConsumer implements IMessageConsumer {
         //   value: message.value.toString(),
         // });
 
-        const notificationMessage: NotificationMessage = this.messageTransformer.bufferMessageToNotificationMessage(
-          message.value
+        await this.commandBus.dispatch(
+          new SendInstantNotificationCommand(
+            this.deserializeMessage(JSON.parse(message.value.toString('utf8')))
+          )
         );
-
-        const cmd = this.messageTransformer.createCommandFromNotificationMessage(
-          notificationMessage
-        );
-        if (cmd == null) {
-          // console.log(
-          //   `invalid channel selected: ${notificationMessage.channel}`
-          // );
-          return;
-        }
-
-        await this.commandBus.dispatch(cmd);
       },
     });
+  }
+
+  private deserializeMessage(payload: Buffer): NotificationMessageContent {
+    return JSON.parse(payload.toString('utf8'));
   }
 }

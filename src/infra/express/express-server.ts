@@ -1,13 +1,12 @@
 import * as express from 'express';
-import { ICommandDispatcher } from '../../domain/command-dispatcher.interface';
-import { ICommand } from '../../domain/command.interface';
+import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
+import { CommandMarker } from '../../interface-adapters/commands/command-marker.interface';
 import * as bodyParser from 'body-parser';
-import { SendInstantEmailCommand } from '../../domain/send-instant-email-command';
 
 export class ExpressServer {
   private app: express.Application;
 
-  constructor(private commandBus: ICommandDispatcher<ICommand>) {
+  constructor(private commandBus: CommandDispatcher<CommandMarker>) {
     this.commandBus = commandBus;
     this.app = express();
   }
@@ -19,25 +18,24 @@ export class ExpressServer {
   }
 
   public registerRoutes(): void {
-    this.app.post('/send-email', async (req, res) => {
-      const { from, to, subject, isHTML, template, payload } = req.body;
-      const sendInstantEmailCommand = new SendInstantEmailCommand(
-        from,
-        to,
-        subject,
-        isHTML,
-        template,
-        payload
-      );
-
-      try {
-        await this.commandBus.dispatch(sendInstantEmailCommand).then(() => {
-          res.send('command succeded!');
-        });
-      } catch (err) {
-        res.send(err.message);
-      }
-    });
+    // this.app.post('/send-email', async (req, res) => {
+    //   const { from, to, subject, isHTML, template, payload } = req.body;
+    //   const sendInstantEmailCommand = new SendInstantNotificationCommand(
+    //     from,
+    //     to,
+    //     subject,
+    //     isHTML,
+    //     template,
+    //     payload
+    //   );
+    //   try {
+    //     await this.commandBus.dispatch(sendInstantEmailCommand).then(() => {
+    //       res.send('command succeded!');
+    //     });
+    //   } catch (err) {
+    //     res.send(err.message);
+    //   }
+    // });
   }
 
   public configure(): void {

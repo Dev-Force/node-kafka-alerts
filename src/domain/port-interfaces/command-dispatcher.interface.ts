@@ -1,3 +1,3 @@
-export interface ICommandDispatcher<Input> {
+export interface CommandDispatcher<Input> {
   dispatch(command: Input): Promise<boolean>;
 }

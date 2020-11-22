@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { Config } from '../../domain/config';
+import { Config } from '../../domain/models/config';
 
 export class DotEnv {
   public initialize(): void {

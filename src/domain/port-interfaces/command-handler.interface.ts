@@ -1,3 +1,3 @@
 export interface ICommandHandler<Command> {
-  handle: (cmd: Command) => Promise<boolean>;
+  handle: (cmd: Command) => Promise<void>;
 }
