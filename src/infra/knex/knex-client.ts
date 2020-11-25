@@ -21,36 +21,41 @@ export class KnexClient implements NotificationGateway {
     notification: Notification
   ): Promise<void> {
     await this.knexConn.transaction(async (trx) => {
-      const {
-        user: { uuid: user_uuid },
-        channel,
-        unmappedData: message_payload,
-        template,
-        subject,
-      } = notification;
-      const uuid: string = uuidv4();
-
-      await this.knexConn('notification_events').transacting(trx).insert({
-        uuid,
-        type: 'NOTIFICATION_PENDING',
-        body: message_payload,
-      });
-
-      await this.knexConn('notifications')
-        .transacting(trx)
-        .insert({
-          uuid,
-          user_uuid,
-          message_payload,
+      try {
+        const {
+          user: { uuid: user_uuid },
           channel,
+          unmappedData: message_payload,
           template,
           subject,
-          status: NotificationStatus.PENDING,
-        })
-        .onConflict('uuid')
-        .merge();
+        } = notification;
+        const uuid: string = uuidv4();
 
-      // TODO: commit or rollback
+        await this.knexConn('notification_events').transacting(trx).insert({
+          uuid,
+          type: 'NOTIFICATION_PENDING',
+          body: message_payload,
+        });
+
+        await this.knexConn('notifications')
+          .transacting(trx)
+          .insert({
+            uuid,
+            user_uuid,
+            message_payload,
+            channel,
+            template,
+            subject,
+            status: NotificationStatus.PENDING,
+          })
+          .onConflict('uuid')
+          .merge();
+
+        trx.commit();
+      } catch (err) {
+        trx.rollback();
+        throw err;
+      }
     });
   }
 }
