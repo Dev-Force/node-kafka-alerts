@@ -15,6 +15,7 @@ import { FSAsync } from './infra/fs-async/fs-async';
 import { SendInstantNotificationCommandHandler } from './interface-adapters/command-handlers/send-instant-notification.command-handler';
 import * as config from 'config';
 import { KnexClient } from './infra/knex/knex-client';
+import { ConfigTemplate } from './domain/models/config-template';
 
 const fsAsync = new FSAsync();
 
@@ -41,8 +42,9 @@ const sendInstantNotificationCommandHandler = new SendInstantNotificationCommand
   sendEmailUseCase,
   knexClient,
   path.join(__dirname, '..', dotEnvConf.getTemplatePath()),
-  config.get('template-extension'),
-  config.get('from-email')
+  config.get<string>('template-extension'),
+  config.get<string>('from-email'),
+  config.get<ConfigTemplate[]>('templates')
 );
 commandBus.registerDecorated(sendInstantNotificationCommandHandler);
 

@@ -15,29 +15,29 @@ export class SendInstantNotificationCommandHandler
     private templateDirPath: string,
     private templateExtension: string,
     private fromEmail: string,
-    private configTemplate: ConfigTemplate
+    private configTemplates: ConfigTemplate[]
   ) {
     this.sendEmailUsecase = sendEmailUsecase;
+    this.userRepo = userRepo;
     this.templateDirPath = templateDirPath;
     this.templateExtension = templateExtension;
     this.fromEmail = fromEmail;
+    this.configTemplates = configTemplates;
   }
 
   async handle(cmd: SendInstantNotificationCommand): Promise<void> {
     const {
       channel,
-      // status,
       subject,
       template,
       unmappedData,
-      // user,
       userUUID,
     } = cmd.notificationMessageContent;
     const templatePath = `${this.templateDirPath}/${template}.${this.templateExtension}`;
 
     const usr = await this.userRepo.getUserByUUID(userUUID);
 
-    const isHTML = this.configTemplate.containsHTML ? true : false;
+    const isHTML = this.configTemplates[template].containsHTML ? true : false;
 
     if (channel === 'EMAIL') {
       const { fromEmail } = this;
