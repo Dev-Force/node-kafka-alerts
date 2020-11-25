@@ -17,9 +17,9 @@ import * as config from 'config';
 
 const fsAsync = new FSAsync();
 
-const confGetter = new DotEnv();
-confGetter.initialize();
-const dotEnvConf = confGetter.getConfig();
+const envGetter = new DotEnv();
+envGetter.initialize();
+const dotEnvConf = envGetter.getConfig();
 
 const emailSender = new SendGridClient(dotEnvConf.getEmailSenderAPIKey());
 const templateCompiler = new HandlebarsCompiler();
@@ -35,7 +35,8 @@ const commandBus = new CommandBus();
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
   path.join(__dirname, '..', dotEnvConf.getTemplatePath()),
-  config.get('template-extension')
+  config.get('template-extension'),
+  config.get('from-email')
 );
 commandBus.registerDecorated(sendInstantNotificationCommandHandler);
 

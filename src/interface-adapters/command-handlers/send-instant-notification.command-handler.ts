@@ -11,11 +11,13 @@ export class SendInstantNotificationCommandHandler
   constructor(
     private sendEmailUsecase: UseCaseExecutor<SendEmailPayload, Promise<void>>,
     private templateDirPath: string,
-    private templateExtension: string
+    private templateExtension: string,
+    private fromEmail: string
   ) {
     this.sendEmailUsecase = sendEmailUsecase;
     this.templateDirPath = templateDirPath;
     this.templateExtension = templateExtension;
+    this.fromEmail = fromEmail;
   }
 
   async handle(cmd: SendInstantNotificationCommand): Promise<void> {
@@ -37,9 +39,7 @@ export class SendInstantNotificationCommandHandler
     const isHTML = true;
 
     if (channel === 'EMAIL') {
-      // TODO: get from email from config
-      const fromEmail = 'no-reply@devforce.gr';
-
+      const { fromEmail } = this;
       this.sendEmailUsecase.execute(
         new SendEmailPayload(
           fromEmail,

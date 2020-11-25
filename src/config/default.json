@@ -1,3 +1,4 @@
 {
-  "template-extension": "hbs"
+  "template-extension": "hbs",
+  "from-email": "support@anelixis.com"
 }
