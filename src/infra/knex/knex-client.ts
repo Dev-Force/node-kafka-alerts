@@ -10,12 +10,10 @@ export class KnexClient implements NotificationRepository, UserRepository {
   private knexConn: knex;
 
   constructor(connStr: string) {
-    // TODO: handle knex await for connection.
     this.knexConn = knex({
       client: 'pg',
       connection: connStr,
-      searchPath: 'notifications',
-      pool: { min: 0, max: 8 },
+      searchPath: ['notification-service'],
     });
   }
 
