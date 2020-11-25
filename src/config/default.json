@@ -1,4 +1,10 @@
 {
   "template-extension": "hbs",
-  "from-email": "support@anelixis.com"
+  "from-email": "support@anelixis.com",
+  "templates": [
+    {
+      "name": "template-example",
+      "containsHTML": true
+    }
+  ]
 }

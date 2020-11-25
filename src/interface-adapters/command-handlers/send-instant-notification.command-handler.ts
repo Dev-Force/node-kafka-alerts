@@ -4,6 +4,7 @@ import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { SendEmailPayload } from '../../use-cases/send-email/send-email-payload';
 import { SendInstantNotificationCommand } from '../commands/send-instant-notification-command';
 import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
+import { ConfigTemplate } from '../../domain/models/config-template';
 
 @CommandHandler(SendInstantNotificationCommand)
 export class SendInstantNotificationCommandHandler
@@ -13,7 +14,8 @@ export class SendInstantNotificationCommandHandler
     private userRepo: UserRepository,
     private templateDirPath: string,
     private templateExtension: string,
-    private fromEmail: string
+    private fromEmail: string,
+    private configTemplate: ConfigTemplate
   ) {
     this.sendEmailUsecase = sendEmailUsecase;
     this.templateDirPath = templateDirPath;
@@ -35,8 +37,7 @@ export class SendInstantNotificationCommandHandler
 
     const usr = await this.userRepo.getUserByUUID(userUUID);
 
-    // TODO: check from config if template contains HTML
-    const isHTML = true;
+    const isHTML = this.configTemplate.containsHTML ? true : false;
 
     if (channel === 'EMAIL') {
       const { fromEmail } = this;
