@@ -2,9 +2,11 @@ import * as knex from 'knex';
 import { v4 as uuidv4 } from 'uuid';
 import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
-import { NotificationGateway } from '../../domain/port-interfaces/notification-gateway.interface';
+import { User } from '../../domain/models/user';
+import { NotificationRepository } from '../../domain/port-interfaces/notification-repository.interface';
+import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
 
-export class KnexClient implements NotificationGateway {
+export class KnexClient implements NotificationRepository, UserRepository {
   private knexConn: knex;
 
   constructor(connStr: string) {
@@ -15,6 +17,16 @@ export class KnexClient implements NotificationGateway {
       searchPath: 'notifications',
       pool: { min: 0, max: 8 },
     });
+  }
+
+  public async getUserByUUID(uuid: string): Promise<User> {
+    const { email, phone } = await this.knexConn
+      .select('email, phone')
+      .from<{ email: string; phone: string }[]>('users')
+      .where('uuid', uuid)
+      .first();
+
+    return new User(uuid, email, phone);
   }
 
   public async storeNewWindowedNotification(

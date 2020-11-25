@@ -12,6 +12,9 @@ export class DotEnv {
       .setWindowedNotificationTopic(process.env.WINDOWED_NOTIFICATIONS_TOPIC)
       .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
       .setTemplatePath(process.env.TEMPLATE_PATH)
-      .setKafkaGroupId(process.env.KAFKA_GROUP_ID);
+      .setKafkaGroupId(process.env.KAFKA_GROUP_ID)
+      .setPostgresConnectionString(
+        `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`
+      );
   }
 }

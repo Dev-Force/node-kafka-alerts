@@ -1,13 +1,13 @@
 import { UseCaseExecutor } from '../use-case-executor.interface';
 import { StoreWindowedNotificationPayload } from './store-windowed-notification-payload';
-import { NotificationGateway } from '../../domain/port-interfaces/notification-gateway.interface';
+import { NotificationRepository } from '../../domain/port-interfaces/notification-repository.interface';
 import { Notification } from '../../domain/models/notification';
 import { User } from '../../domain/models/user';
 
 export class SendEmailUseCase
   implements UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>> {
-  constructor(private notificationGateway: NotificationGateway) {
-    this.notificationGateway = notificationGateway;
+  constructor(private notificationRepository: NotificationRepository) {
+    this.notificationRepository = notificationRepository;
   }
 
   async execute(
@@ -31,7 +31,7 @@ export class SendEmailUseCase
       subject
     );
 
-    await this.notificationGateway.storeNewWindowedNotification(
+    await this.notificationRepository.storeNewWindowedNotification(
       windowedNotification
     );
   }

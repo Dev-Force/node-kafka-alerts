@@ -6,6 +6,7 @@ export class Config {
   private kakfaGroupId: string;
   private kakfaHost: string;
   private kakfaPort: string;
+  private postgresConnectionString: string;
 
   public setInstantNotificationTopic(instantNotTopic: string): Config {
     this.instantNotificationTopic = instantNotTopic;
@@ -67,6 +68,15 @@ export class Config {
 
   public setKakfaPort(value: string): Config {
     this.kakfaPort = value;
+    return this;
+  }
+
+  public getPostgresConnectionString(): string {
+    return this.postgresConnectionString;
+  }
+
+  public setPostgresConnectionString(value: string): Config {
+    this.postgresConnectionString = value;
     return this;
   }
 }

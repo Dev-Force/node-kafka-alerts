@@ -3,13 +3,14 @@ import { CommandHandler } from './command-handler.decorator';
 import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { SendEmailPayload } from '../../use-cases/send-email/send-email-payload';
 import { SendInstantNotificationCommand } from '../commands/send-instant-notification-command';
-import { User } from '../../domain/models/user';
+import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
 
 @CommandHandler(SendInstantNotificationCommand)
 export class SendInstantNotificationCommandHandler
   implements ICommandHandler<SendInstantNotificationCommand> {
   constructor(
     private sendEmailUsecase: UseCaseExecutor<SendEmailPayload, Promise<void>>,
+    private userRepo: UserRepository,
     private templateDirPath: string,
     private templateExtension: string,
     private fromEmail: string
@@ -28,12 +29,11 @@ export class SendInstantNotificationCommandHandler
       template,
       unmappedData,
       // user,
-      // uuid,
+      userUUID,
     } = cmd.notificationMessageContent;
     const templatePath = `${this.templateDirPath}/${template}.${this.templateExtension}`;
 
-    // TODO: get user details from user repository first by uuid
-    const usr = new User('uuid', 'email', 'phone');
+    const usr = await this.userRepo.getUserByUUID(userUUID);
 
     // TODO: check from config if template contains HTML
     const isHTML = true;

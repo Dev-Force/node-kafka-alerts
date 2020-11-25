@@ -1,5 +1,5 @@
 import { Notification } from '../models/notification';
 
-export interface NotificationGateway {
+export interface NotificationRepository {
   storeNewWindowedNotification(notification: Notification): Promise<void>;
 }

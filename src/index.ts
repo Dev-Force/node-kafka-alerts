@@ -14,6 +14,7 @@ import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 import { FSAsync } from './infra/fs-async/fs-async';
 import { SendInstantNotificationCommandHandler } from './interface-adapters/command-handlers/send-instant-notification.command-handler';
 import * as config from 'config';
+import { KnexClient } from './infra/knex/knex-client';
 
 const fsAsync = new FSAsync();
 
@@ -32,8 +33,13 @@ const sendEmailUseCase = new SendEmailUseCase(
 
 // INIT BUS
 const commandBus = new CommandBus();
+const knexClient = new KnexClient(
+  envGetter.getConfig().getPostgresConnectionString()
+);
+
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
+  knexClient,
   path.join(__dirname, '..', dotEnvConf.getTemplatePath()),
   config.get('template-extension'),
   config.get('from-email')
