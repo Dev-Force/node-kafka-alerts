@@ -14,12 +14,13 @@ export class KnexClient implements NotificationRepository, UserRepository {
       client: 'pg',
       connection: connStr,
       searchPath: ['notification-service'],
+      debug: true,
     });
   }
 
   public async getUserByUUID(uuid: string): Promise<User> {
     const { email, phone } = await this.knexConn
-      .select('email, phone')
+      .select('email', 'phone')
       .from<{ email: string; phone: string }[]>('users')
       .where('uuid', uuid)
       .first();
@@ -31,41 +32,34 @@ export class KnexClient implements NotificationRepository, UserRepository {
     notification: Notification
   ): Promise<void> {
     await this.knexConn.transaction(async (trx) => {
-      try {
-        const {
-          user: { uuid: user_uuid },
+      const {
+        user: { uuid: user_uuid },
+        channel,
+        unmappedData: message_payload,
+        template,
+        subject,
+      } = notification;
+      const uuid: string = uuidv4();
+
+      await this.knexConn('notification_events').transacting(trx).insert({
+        uuid,
+        type: 'NOTIFICATION_PENDING',
+        body: message_payload,
+      });
+
+      await this.knexConn('notifications')
+        .transacting(trx)
+        .insert({
+          uuid,
+          user_uuid,
+          message_payload,
           channel,
-          unmappedData: message_payload,
           template,
           subject,
-        } = notification;
-        const uuid: string = uuidv4();
-
-        await this.knexConn('notification_events').transacting(trx).insert({
-          uuid,
-          type: 'NOTIFICATION_PENDING',
-          body: message_payload,
-        });
-
-        await this.knexConn('notifications')
-          .transacting(trx)
-          .insert({
-            uuid,
-            user_uuid,
-            message_payload,
-            channel,
-            template,
-            subject,
-            status: NotificationStatus.PENDING,
-          })
-          .onConflict('uuid')
-          .merge();
-
-        trx.commit();
-      } catch (err) {
-        trx.rollback();
-        throw err;
-      }
+          status: NotificationStatus.PENDING,
+        })
+        .onConflict('uuid')
+        .merge();
     });
   }
 }

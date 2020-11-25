@@ -3,7 +3,9 @@ CREATE TABLE users (
     uuid UUID,
     email VARCHAR(255),
     phone VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(uuid)
 );
 
 CREATE TABLE notification_events (
@@ -11,7 +13,7 @@ CREATE TABLE notification_events (
   uuid UUID NOT NULL,
   type TEXT NOT NULL,
   body JSONB NOT NULL,
-  created_at WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE notifications (
@@ -29,5 +31,5 @@ CREATE TABLE notifications (
       FOREIGN KEY(user_uuid) 
       REFERENCES users(uuid),
 
-    UNIQUE(notification_uuid)
+    UNIQUE(uuid)
 );

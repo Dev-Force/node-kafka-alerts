@@ -16,6 +16,8 @@ import { SendInstantNotificationCommandHandler } from './interface-adapters/comm
 import * as config from 'config';
 import { KnexClient } from './infra/knex/knex-client';
 import { ConfigTemplate } from './domain/models/config-template';
+import { StoreWindowedNotificationCommandHandler } from './interface-adapters/command-handlers/store-windowed-notification.command-handler';
+import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 
 const fsAsync = new FSAsync();
 
@@ -26,18 +28,23 @@ const dotEnvConf = envGetter.getConfig();
 const emailSender = new SendGridClient(dotEnvConf.getEmailSenderAPIKey());
 const templateCompiler = new HandlebarsCompiler();
 
-const sendEmailUseCase = new SendEmailUseCase(
-  templateCompiler,
-  emailSender,
-  fsAsync
-);
-
 // INIT BUS
 const commandBus = new CommandBus();
 const knexClient = new KnexClient(
   envGetter.getConfig().getPostgresConnectionString()
 );
 
+// USE CASES
+const sendEmailUseCase = new SendEmailUseCase(
+  templateCompiler,
+  emailSender,
+  fsAsync
+);
+const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
+  knexClient
+);
+
+// COMMAND HANDLERS
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
   knexClient,
@@ -46,14 +53,19 @@ const sendInstantNotificationCommandHandler = new SendInstantNotificationCommand
   config.get<string>('from-email'),
   config.get<ConfigTemplate[]>('templates')
 );
+const storeWindowedNotificationsCommandHandler = new StoreWindowedNotificationCommandHandler(
+  storeWindowedNotificationsUseCase
+);
+
 commandBus.registerDecorated(sendInstantNotificationCommandHandler);
+commandBus.registerDecorated(storeWindowedNotificationsCommandHandler);
 
 const expressApp = new ExpressServer(commandBus);
 expressApp.init();
 
 const kafka = new Kafka({
   clientId: 'my-app',
-  brokers: [`${dotEnvConf.getKakfaHost}:${dotEnvConf.getKakfaPort()}`],
+  brokers: [`${dotEnvConf.getKafkaHost()}:${dotEnvConf.getKafkaPort()}`],
 });
 const instantNotificationConsumer = new KafkaJSConsumer(
   dotEnvConf.getInstantNotificationTopic(),
@@ -62,9 +74,9 @@ const instantNotificationConsumer = new KafkaJSConsumer(
 );
 instantNotificationConsumer.consumeInstantNotifications();
 
-const windowedNotificationConsumer = new KafkaJSConsumer(
-  dotEnvConf.getWindowedNotificationTopic(),
-  kafka.consumer({ groupId: dotEnvConf.getKafkaGroupId() }),
-  commandBus
-);
-windowedNotificationConsumer.consumeWindowedNotifications();
+// const windowedNotificationConsumer = new KafkaJSConsumer(
+//   dotEnvConf.getWindowedNotificationTopic(),
+//   kafka.consumer({ groupId: dotEnvConf.getKafkaGroupId() }),
+//   commandBus
+// );
+// windowedNotificationConsumer.consumeWindowedNotifications();

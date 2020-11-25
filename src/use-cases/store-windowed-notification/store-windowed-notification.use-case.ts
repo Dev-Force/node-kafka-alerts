@@ -4,7 +4,7 @@ import { NotificationRepository } from '../../domain/port-interfaces/notificatio
 import { Notification } from '../../domain/models/notification';
 import { User } from '../../domain/models/user';
 
-export class SendEmailUseCase
+export class StoreWindowedNotificationsUseCase
   implements UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>> {
   constructor(private notificationRepository: NotificationRepository) {
     this.notificationRepository = notificationRepository;

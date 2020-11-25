@@ -3,9 +3,9 @@ export class Config {
   private windowedNotificationTopic: string;
   private emailSenderAPIKey: string;
   private templatePath: string;
-  private kakfaGroupId: string;
-  private kakfaHost: string;
-  private kakfaPort: string;
+  private kafkaGroupId: string;
+  private kafkaHost: string;
+  private kafkaPort: string;
   private postgresConnectionString: string;
 
   public setInstantNotificationTopic(instantNotTopic: string): Config {
@@ -44,30 +44,30 @@ export class Config {
     return this.templatePath;
   }
 
-  public setKafkaGroupId(kakfaGroupId: string): Config {
-    this.kakfaGroupId = kakfaGroupId;
+  public setKafkaGroupId(kafkaGroupId: string): Config {
+    this.kafkaGroupId = kafkaGroupId;
     return this;
   }
 
   public getKafkaGroupId(): string {
-    return this.kakfaGroupId;
+    return this.kafkaGroupId;
   }
 
-  public getKakfaHost(): string {
-    return this.kakfaHost;
+  public getKafkaHost(): string {
+    return this.kafkaHost;
   }
 
-  public setKakfaHost(value: string): Config {
-    this.kakfaHost = value;
+  public setKafkaHost(value: string): Config {
+    this.kafkaHost = value;
     return this;
   }
 
-  public getKakfaPort(): string {
-    return this.kakfaPort;
+  public getKafkaPort(): string {
+    return this.kafkaPort;
   }
 
-  public setKakfaPort(value: string): Config {
-    this.kakfaPort = value;
+  public setKafkaPort(value: string): Config {
+    this.kafkaPort = value;
     return this;
   }
 

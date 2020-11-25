@@ -40,7 +40,7 @@ export class KafkaJSConsumer {
 
         await this.commandBus.dispatch(
           new StoreWindowedNotificationCommand(
-            this.deserializeMessage(JSON.parse(message.value.toString('utf8')))
+            this.deserializeMessage(message.value)
           )
         );
       },
@@ -69,7 +69,7 @@ export class KafkaJSConsumer {
 
         await this.commandBus.dispatch(
           new SendInstantNotificationCommand(
-            this.deserializeMessage(JSON.parse(message.value.toString('utf8')))
+            this.deserializeMessage(message.value)
           )
         );
       },

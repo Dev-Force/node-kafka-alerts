@@ -13,6 +13,8 @@ export class DotEnv {
       .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
       .setTemplatePath(process.env.TEMPLATE_PATH)
       .setKafkaGroupId(process.env.KAFKA_GROUP_ID)
+      .setKafkaPort(process.env.KAFKA_PORT)
+      .setKafkaHost('kafka')
       .setPostgresConnectionString(
         `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`
       );

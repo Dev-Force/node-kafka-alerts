@@ -37,7 +37,10 @@ export class SendInstantNotificationCommandHandler
 
     const usr = await this.userRepo.getUserByUUID(userUUID);
 
-    const isHTML = this.configTemplates[template].containsHTML ? true : false;
+    const templateConfigEntry = this.configTemplates.find(
+      (t) => t.name === template
+    );
+    const isHTML = templateConfigEntry.containsHTML ? true : false;
 
     if (channel === 'EMAIL') {
       const { fromEmail } = this;
