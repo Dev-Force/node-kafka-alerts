@@ -8,31 +8,27 @@ import { CommandBus } from './infra/buses/command-bus';
 import { ExpressServer } from './infra/express/express-server';
 import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
-import { DotEnv } from './infra/dotenv/dotenv';
-import { SendGridClient } from './infra/sendgrid/sendgrid-client';
 import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 import { FSAsync } from './infra/fs-async/fs-async';
 import { SendInstantNotificationCommandHandler } from './interface-adapters/command-handlers/send-instant-notification.command-handler';
-import * as config from 'config';
 import { KnexClient } from './infra/knex/knex-client';
-import { ConfigTemplate } from './domain/models/config-template';
 import { StoreWindowedNotificationCommandHandler } from './interface-adapters/command-handlers/store-windowed-notification.command-handler';
 import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
+import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
+import { ConfigComposer } from './infra/config-composer/config-composer';
 
 const fsAsync = new FSAsync();
 
-const envGetter = new DotEnv();
-envGetter.initialize();
-const dotEnvConf = envGetter.getConfig();
+const configComposer = new ConfigComposer();
+configComposer.initialize();
+const config = configComposer.composeConfig();
 
-const emailSender = new SendGridClient(dotEnvConf.getEmailSenderAPIKey());
+const emailSender = new MockSendGridClient(config.emailSenderAPIKey);
 const templateCompiler = new HandlebarsCompiler();
 
 // INIT BUS
 const commandBus = new CommandBus();
-const knexClient = new KnexClient(
-  envGetter.getConfig().getPostgresConnectionString()
-);
+const knexClient = new KnexClient(config.postgresConnectionString);
 
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(
@@ -48,10 +44,10 @@ const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
   knexClient,
-  path.join(__dirname, '..', dotEnvConf.getTemplatePath()),
-  config.get<string>('template-extension'),
-  config.get<string>('from-email'),
-  config.get<ConfigTemplate[]>('templates')
+  path.join(__dirname, '..', config.templatePath),
+  config.templateExtension,
+  config.fromEmail,
+  config.templates
 );
 const storeWindowedNotificationsCommandHandler = new StoreWindowedNotificationCommandHandler(
   storeWindowedNotificationsUseCase
@@ -65,18 +61,18 @@ expressApp.init();
 
 const kafka = new Kafka({
   clientId: 'my-app',
-  brokers: [`${dotEnvConf.getKafkaHost()}:${dotEnvConf.getKafkaPort()}`],
+  brokers: [`${config.kafkaHost}:${config.kafkaPort}`],
 });
 const instantNotificationConsumer = new KafkaJSConsumer(
-  dotEnvConf.getInstantNotificationTopic(),
-  kafka.consumer({ groupId: dotEnvConf.getKafkaGroupId() }),
+  config.instantNotificationTopic,
+  kafka.consumer({ groupId: config.kafkaGroupId }),
   commandBus
 );
 instantNotificationConsumer.consumeInstantNotifications();
 
 // const windowedNotificationConsumer = new KafkaJSConsumer(
-//   dotEnvConf.getWindowedNotificationTopic(),
-//   kafka.consumer({ groupId: dotEnvConf.getKafkaGroupId() }),
+//   config.windowedNotificationTopic,
+//   kafka.consumer({ groupId: config.kafkaGroupId }),
 //   commandBus
 // );
 // windowedNotificationConsumer.consumeWindowedNotifications();
