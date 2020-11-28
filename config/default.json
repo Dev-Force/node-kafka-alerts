@@ -1,11 +1,11 @@
 {
-  "template-extension": "hbs",
-  "template-path": "templates",
+  "templateExtension": "hbs",
+  "templatePath": "templates",
   "templates": [
     {
       "name": "template-example",
       "containsHTML": true
     }
   ],
-  "from-email": "support@anelixis.com"
+  "fromEmail": "support@anelixis.com"
 }

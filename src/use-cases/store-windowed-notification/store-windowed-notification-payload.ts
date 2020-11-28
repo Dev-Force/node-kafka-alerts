@@ -1,11 +1,13 @@
 export class StoreWindowedNotificationPayload {
   constructor(
+    public notificationUUID: string,
     public userUUID: string,
     public subject: string,
     public template: string,
     public unmappedData: Record<string, unknown>,
     public channel: string
   ) {
+    this.notificationUUID = notificationUUID;
     this.userUUID = userUUID;
     this.subject = subject;
     this.template = template;

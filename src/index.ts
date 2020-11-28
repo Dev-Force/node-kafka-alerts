@@ -16,6 +16,7 @@ import { StoreWindowedNotificationCommandHandler } from './interface-adapters/co
 import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
 import { ConfigComposer } from './infra/config-composer/config-composer';
+import { DatabaseGateway } from './interface-adapters/database/database-gateway';
 
 const fsAsync = new FSAsync();
 
@@ -28,7 +29,10 @@ const templateCompiler = new HandlebarsCompiler();
 
 // INIT BUS
 const commandBus = new CommandBus();
-const knexClient = new KnexClient(config.postgresConnectionString);
+const knexClient = new KnexClient(
+  config.postgresConnectionString,
+  new DatabaseGateway()
+);
 
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(
@@ -63,16 +67,10 @@ const kafka = new Kafka({
   clientId: 'my-app',
   brokers: [`${config.kafkaHost}:${config.kafkaPort}`],
 });
-const instantNotificationConsumer = new KafkaJSConsumer(
+const kafkaConsumer = new KafkaJSConsumer(
   config.instantNotificationTopic,
+  config.windowedNotificationTopic,
   kafka.consumer({ groupId: config.kafkaGroupId }),
   commandBus
 );
-instantNotificationConsumer.consumeInstantNotifications();
-
-// const windowedNotificationConsumer = new KafkaJSConsumer(
-//   config.windowedNotificationTopic,
-//   kafka.consumer({ groupId: config.kafkaGroupId }),
-//   commandBus
-// );
-// windowedNotificationConsumer.consumeWindowedNotifications();
+kafkaConsumer.consume();

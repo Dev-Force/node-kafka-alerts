@@ -19,6 +19,7 @@ export class StoreWindowedNotificationCommandHandler
   async handle(cmd: StoreWindowedNotificationCommand): Promise<void> {
     const {
       notificationMessageContent: {
+        notificationUUID,
         userUUID,
         template,
         subject,
@@ -29,6 +30,7 @@ export class StoreWindowedNotificationCommandHandler
 
     this.usecase.execute(
       new StoreWindowedNotificationPayload(
+        notificationUUID,
         userUUID,
         subject,
         template,

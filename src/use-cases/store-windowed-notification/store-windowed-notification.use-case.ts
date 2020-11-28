@@ -19,11 +19,12 @@ export class StoreWindowedNotificationsUseCase
       template,
       unmappedData,
       userUUID,
+      notificationUUID,
     } = storeWindowedNotificationPayload;
 
     const user = new User(userUUID, null, null);
     const windowedNotification = new Notification(
-      null,
+      notificationUUID,
       user,
       unmappedData,
       channel,

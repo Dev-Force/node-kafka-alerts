@@ -7,73 +7,68 @@ import { StoreWindowedNotificationCommand } from '../../interface-adapters/comma
 
 export class KafkaJSConsumer {
   private consumer: Consumer;
-  private topic: string;
+  private instantNotificationTopic: string;
+  private windowedNotificationsTopic: string;
   private commandBus: CommandDispatcher<CommandMarker>;
 
   constructor(
-    topic: string,
+    instantNotificationTopic: string,
+    windowedNotificationsTopic: string,
     consumer: Consumer,
     commandBus: CommandDispatcher<CommandMarker>
   ) {
     this.consumer = consumer;
-    this.topic = topic;
+    this.instantNotificationTopic = instantNotificationTopic;
+    this.windowedNotificationsTopic = windowedNotificationsTopic;
     this.commandBus = commandBus;
   }
 
-  async consumeWindowedNotifications(): Promise<void> {
-    const { consumer, topic } = this;
-    // console.log('topic', topic);
+  async consume(): Promise<void> {
+    const {
+      consumer,
+      instantNotificationTopic,
+      windowedNotificationsTopic,
+    } = this;
 
     // Consuming
     await consumer.connect();
-    await consumer.subscribe({ topic, fromBeginning: true });
+    await consumer.subscribe({
+      topic: instantNotificationTopic,
+      fromBeginning: true,
+    });
+    await consumer.subscribe({
+      topic: windowedNotificationsTopic,
+      fromBeginning: true,
+    });
 
     await consumer.run({
       eachMessage: async (payload: EachMessagePayload): Promise<void> => {
-        const { /*partition,*/ message } = payload;
+        const { message, topic } = payload;
 
-        // console.log({
-        //   partition,
-        //   offset: message.offset,
-        //   value: message.value.toString(),
-        // });
+        switch (topic) {
+          case instantNotificationTopic:
+            await this.commandBus.dispatch(
+              new SendInstantNotificationCommand(
+                this.deserializeMessage(message.value)
+              )
+            );
+            break;
 
-        await this.commandBus.dispatch(
-          new StoreWindowedNotificationCommand(
-            this.deserializeMessage(message.value)
-          )
-        );
+          case windowedNotificationsTopic:
+            await this.commandBus.dispatch(
+              new StoreWindowedNotificationCommand(
+                this.deserializeMessage(message.value)
+              )
+            );
+            break;
+
+          default:
+            console.log('no such topic command');
+        }
       },
     });
 
     return;
-  }
-
-  public async consumeInstantNotifications(): Promise<void> {
-    const { consumer, topic } = this;
-    // console.log('topic', topic);
-
-    // Consuming
-    await consumer.connect();
-    await consumer.subscribe({ topic, fromBeginning: true });
-
-    await consumer.run({
-      eachMessage: async (payload: EachMessagePayload): Promise<void> => {
-        const { /*partition,*/ message } = payload;
-
-        // console.log({
-        //   partition,
-        //   offset: message.offset,
-        //   value: message.value.toString(),
-        // });
-
-        await this.commandBus.dispatch(
-          new SendInstantNotificationCommand(
-            this.deserializeMessage(message.value)
-          )
-        );
-      },
-    });
   }
 
   private deserializeMessage(payload: Buffer): NotificationMessageContent {
