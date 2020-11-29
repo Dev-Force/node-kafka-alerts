@@ -5,7 +5,8 @@ export class StoreWindowedNotificationPayload {
     public subject: string,
     public template: string,
     public unmappedData: Record<string, unknown>,
-    public channel: string
+    public channel: string,
+    public uniqueGroupIdentifiers: string[]
   ) {
     this.notificationUUID = notificationUUID;
     this.userUUID = userUUID;
@@ -13,5 +14,6 @@ export class StoreWindowedNotificationPayload {
     this.template = template;
     this.unmappedData = unmappedData;
     this.channel = channel;
+    this.uniqueGroupIdentifiers = uniqueGroupIdentifiers;
   }
 }

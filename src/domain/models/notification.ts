@@ -9,7 +9,8 @@ export class Notification {
     public channel: string,
     public template: string,
     public subject: string,
-    public status: NotificationStatus = NotificationStatus.PENDING
+    public status: NotificationStatus = NotificationStatus.NOTIFICATION_PENDING,
+    public uniqueGroupIdentifiers: string[]
   ) {
     this.uuid = uuid;
     this.user = user;
@@ -18,5 +19,6 @@ export class Notification {
     this.template = template;
     this.subject = subject;
     this.status = status;
+    this.uniqueGroupIdentifiers = uniqueGroupIdentifiers;
   }
 }

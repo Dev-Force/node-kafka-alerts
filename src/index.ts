@@ -31,6 +31,7 @@ const templateCompiler = new HandlebarsCompiler();
 const commandBus = new CommandBus();
 const knexClient = new KnexClient(
   config.postgresConnectionString,
+  new DatabaseGateway(),
   new DatabaseGateway()
 );
 
@@ -41,6 +42,7 @@ const sendEmailUseCase = new SendEmailUseCase(
   fsAsync
 );
 const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
+  knexClient,
   knexClient
 );
 

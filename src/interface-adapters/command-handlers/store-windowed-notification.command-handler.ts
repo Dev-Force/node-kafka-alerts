@@ -25,6 +25,7 @@ export class StoreWindowedNotificationCommandHandler
         subject,
         unmappedData,
         channel,
+        uniqueGroupIdentifiers,
       },
     } = cmd;
 
@@ -35,7 +36,8 @@ export class StoreWindowedNotificationCommandHandler
         subject,
         template,
         unmappedData,
-        channel
+        channel,
+        uniqueGroupIdentifiers
       )
     );
   }
