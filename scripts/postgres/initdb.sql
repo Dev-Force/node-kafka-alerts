@@ -39,28 +39,20 @@ CREATE TABLE notifications (
     template VARCHAR(255),
     subject VARCHAR(255),
     status TEXT,
+    time_window_uuid UUID NOT NULL,
+    unique_group_identifiers JSONB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user_uuid
       FOREIGN KEY(user_uuid) 
       REFERENCES users(uuid),
 
+    CONSTRAINT fk_time_window_uuid
+      FOREIGN KEY(time_window_uuid) 
+      REFERENCES time_windows(uuid),
+
     UNIQUE(uuid)
 );
 
-CREATE TABLE notification_time_windows (
-  id serial PRIMARY KEY,
-  notification_uuid UUID NOT NULL,
-  time_window_uuid UUID NOT NULL,
-  unique_group_identifiers JSONB NOT NULL,
-  
-  UNIQUE(time_window_uuid, unique_group_identifiers),
-
-  CONSTRAINT fk_notification_uuid
-    FOREIGN KEY(notification_uuid) 
-    REFERENCES notifications(uuid),
-
-  CONSTRAINT fk_time_window_uuid
-    FOREIGN KEY(time_window_uuid) 
-    REFERENCES time_windows(uuid)
-);
+INSERT INTO time_windows (uuid) VALUES ('70d0a457-869c-4d22-a3ea-d75ed3404dbb');
+INSERT INTO users (uuid, email, phone) VALUES ('70d0a457-869c-4d22-a3ea-d75ed3404dbb', 'test@example.com', 'example_phone');

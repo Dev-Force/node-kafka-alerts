@@ -107,15 +107,17 @@ export class KnexClient implements NotificationRepository, UserRepository {
           template,
           subject,
           status: NotificationStatus.NOTIFICATION_PENDING,
+          time_window_uuid: timeWindowUUID.uuid,
+          unique_group_identifiers,
         })
         .onConflict('uuid')
         .merge();
 
-      await this.knexConn('notification_time_windows').transacting(trx).insert({
-        notification_uuid: uuid,
-        time_window_uuid: timeWindowUUID.uuid,
-        unique_group_identifiers,
-      });
+      // await this.knexConn('notification_time_windows').transacting(trx).insert({
+      //   notification_uuid: uuid,
+      //   time_window_uuid: timeWindowUUID.uuid,
+      //   unique_group_identifiers,
+      // });
     });
   }
 
