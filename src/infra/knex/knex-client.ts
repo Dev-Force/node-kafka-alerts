@@ -97,6 +97,9 @@ export class KnexClient implements NotificationRepository, UserRepository {
           version: newNotificationVersion,
         });
 
+      // TODO: version and aggregate_uuid unique constraint violation (OCC on notification update)
+      // (rarely happens) retries consumption kafka message.
+
       await this.knexConn('notifications')
         .transacting(trx)
         .insert({
@@ -113,11 +116,8 @@ export class KnexClient implements NotificationRepository, UserRepository {
         .onConflict('uuid')
         .merge();
 
-      // await this.knexConn('notification_time_windows').transacting(trx).insert({
-      //   notification_uuid: uuid,
-      //   time_window_uuid: timeWindowUUID.uuid,
-      //   unique_group_identifiers,
-      // });
+      // TODO: handle exception for unique time_window_uuid and unique_group_identifiers combo.
+      // We need to skip kafka message if a unique constraint violation happens.
     });
   }
 

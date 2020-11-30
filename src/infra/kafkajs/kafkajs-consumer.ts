@@ -41,6 +41,8 @@ export class KafkaJSConsumer {
       fromBeginning: true,
     });
 
+    // TODO: On some errors retry.
+    // Else skip message. (right now, all messages are skipped if there is an error.)
     await consumer.run({
       eachMessage: async (payload: EachMessagePayload): Promise<void> => {
         const { message, topic } = payload;
