@@ -1,4 +1,4 @@
-export class DBNotification {
+export class NotificationRow {
   public uuid: string;
   public user_uuid: string;
   public channel: string;

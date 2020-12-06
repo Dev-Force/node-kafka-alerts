@@ -1,23 +1,23 @@
-import { NotificationRepository } from '../../domain/port-interfaces/notification-repository.interface';
-import { TimeWindowRepository } from '../../domain/port-interfaces/time-window-repository.interface';
 import { UseCaseExecutor } from '../use-case-executor.interface';
 import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
 import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
 import { NotificationMessageContent } from '../../domain/notification-message-content';
+import { TimeWindowCreator } from '../../domain/port-interfaces/time-window-creator.interface';
+import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
 
 export class SendWindowedNotificationsUseCase
   implements UseCaseExecutor<void, Promise<void>> {
   constructor(
-    private windowRepo: TimeWindowRepository,
-    private notificationRepo: NotificationRepository,
+    private timeWindowCreator: TimeWindowCreator,
+    private notificationFetcher: NotificationFetcher,
     private commandDispatcher: CommandDispatcher<SendInstantNotificationCommand>
   ) {}
 
   public async execute(): Promise<void> {
-    // const window = await this.windowRepo.getLatestTimeWindow();
-    await this.windowRepo.createNewTimeWindow();
+    // const window = await this.timeWindowFetcher.getLatestTimeWindow();
+    await this.timeWindowCreator.createNewTimeWindow();
 
-    const pendingNotifications = await this.notificationRepo.getAllPendingNotifications();
+    const pendingNotifications = await this.notificationFetcher.getAllPendingNotifications();
 
     // TODO: DONT DISCARD NON EMAIL NOTIFICATIONS
     const pendingBatchNotifications = pendingNotifications.filter(

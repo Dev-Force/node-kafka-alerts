@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { ICommandHandler } from '../../domain/port-interfaces/command-handler.interface';
 import { CommandMarker } from '../../domain/commands/command-marker.interface';
-import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/command-handlers/command-handler.constants';
+import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/controllers/command-handler.constants';
 
 export class CommandBus {
   private registryMap = {};

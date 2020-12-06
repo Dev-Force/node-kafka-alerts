@@ -3,22 +3,22 @@ import { CommandHandler } from './command-handler.decorator';
 import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { SendEmailPayload } from '../../use-cases/send-email/send-email-payload';
 import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
-import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
 import { ConfigTemplate } from '../../domain/models/config-template';
+import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
 
 @CommandHandler(SendInstantNotificationCommand)
 export class SendInstantNotificationCommandHandler
   implements ICommandHandler<SendInstantNotificationCommand> {
   constructor(
     private sendEmailUsecase: UseCaseExecutor<SendEmailPayload, Promise<void>>,
-    private userRepo: UserRepository,
+    private userFetcher: UserFetcher,
     private templateDirPath: string,
     private templateExtension: string,
     private fromEmail: string,
     private configTemplates: ConfigTemplate[]
   ) {
     this.sendEmailUsecase = sendEmailUsecase;
-    this.userRepo = userRepo;
+    this.userFetcher = userFetcher;
     this.templateDirPath = templateDirPath;
     this.templateExtension = templateExtension;
     this.fromEmail = fromEmail;
@@ -35,7 +35,7 @@ export class SendInstantNotificationCommandHandler
     } = cmd.notificationMessageContent;
     const templatePath = `${this.templateDirPath}/${template}.${this.templateExtension}`;
 
-    const usr = await this.userRepo.getUserByUUID(userUUID);
+    const usr = await this.userFetcher.getUserByUUID(userUUID);
 
     const templateConfigEntry = this.configTemplates.find(
       (t) => t.name === template

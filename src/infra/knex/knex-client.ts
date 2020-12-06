@@ -1,45 +1,32 @@
 import * as knex from 'knex';
-import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
 import { TimeWindow } from '../../domain/models/time-window';
-import { User } from '../../domain/models/user';
-import { NotificationRepository } from '../../domain/port-interfaces/notification-repository.interface';
-import { TimeWindowRepository } from '../../domain/port-interfaces/time-window-repository.interface';
-import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
-import { DatabaseAccessor } from '../../interface-adapters/database/database-accessor.interface';
-import { NotificationRow } from '../../interface-adapters/database/notification-row';
-import { UserRow } from '../../interface-adapters/database/user-row';
+import { NotificationRow } from '../../interface-adapters/gateways/notification-row';
+import { UserRow } from '../../interface-adapters/gateways/user-row';
 import { v4 as uuidv4 } from 'uuid';
+import { NotificationDAO } from '../../interface-adapters/gateways/notification-dao.interface';
+import { UserDAO } from '../../interface-adapters/gateways/user-dao.interface';
+import { TimeWindowDAO } from '../../interface-adapters/gateways/time-window-dao.interface';
+import { TimeWindowRow } from '../../interface-adapters/gateways/time-window-row';
 
-export class KnexClient
-  implements NotificationRepository, UserRepository, TimeWindowRepository {
+export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
-  private userAdapter: DatabaseAccessor;
-  private notificationAdapter: DatabaseAccessor;
 
-  constructor(
-    connStr: string,
-    schemas: string[],
-    userAdapter: DatabaseAccessor,
-    notificationAdapter: DatabaseAccessor
-  ) {
+  constructor(connStr: string, schemas: string[]) {
     this.knexConn = knex({
       client: 'pg',
       connection: connStr,
       searchPath: schemas,
     });
-    this.userAdapter = userAdapter;
-    this.notificationAdapter = notificationAdapter;
   }
 
-  public async getLatestTimeWindow(): Promise<TimeWindow> {
+  public async getLatestTimeWindow(): Promise<TimeWindowRow> {
     const { uuid } = await this.knexConn('time_windows')
       .select('uuid')
       .orderBy('id', 'desc')
       .first();
 
-    const timeWindow = new TimeWindow();
-    timeWindow.uuid = uuid;
+    const timeWindow = new TimeWindow(uuid);
 
     return timeWindow;
   }
@@ -50,23 +37,19 @@ export class KnexClient
     });
   }
 
-  public async getUserByUUID(uuid: string): Promise<User> {
+  public async getUserByUUID(uuid: string): Promise<UserRow> {
     const { email, phone } = await this.knexConn
       .select('email', 'phone')
       .from<{ email: string; phone: string }[]>('users')
       .where('uuid', uuid)
       .first();
 
-    return this.userAdapter.buildUser({ uuid, email, phone });
+    return { uuid, email, phone };
   }
 
   public async storeNewWindowedNotification(
-    notification: Notification
+    notification: NotificationRow
   ): Promise<void> {
-    const dbNotification = this.notificationAdapter.notificationFromDomainNotification(
-      notification
-    );
-
     await this.knexConn.transaction(async (trx) => {
       const {
         uuid,
@@ -76,7 +59,7 @@ export class KnexClient
         template,
         subject,
         unique_group_identifiers,
-      } = dbNotification;
+      } = notification;
 
       const lastNotificationVersion = await this.knexConn('events')
         .transacting(trx)
@@ -144,7 +127,7 @@ export class KnexClient
     });
   }
 
-  public async getAllPendingNotifications(): Promise<any> {
+  public async getAllPendingNotifications(): Promise<NotificationRow[]> {
     // TODO: per time window or per status
 
     const res: any[] = await this.knexConn

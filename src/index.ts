@@ -10,14 +10,15 @@ import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
 import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 import { FSAsync } from './infra/fs-async/fs-async';
-import { SendInstantNotificationCommandHandler } from './interface-adapters/command-handlers/send-instant-notification.command-handler';
+import { SendInstantNotificationCommandHandler } from './interface-adapters/controllers/send-instant-notification.command-handler';
 import { KnexClient } from './infra/knex/knex-client';
-import { StoreWindowedNotificationCommandHandler } from './interface-adapters/command-handlers/store-windowed-notification.command-handler';
+import { StoreWindowedNotificationCommandHandler } from './interface-adapters/controllers/store-windowed-notification.command-handler';
 import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
 import { ConfigComposer } from './infra/config-composer/config-composer';
-import { DatabaseGateway } from './interface-adapters/database/database-gateway';
 import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
+import { NotificationDataMapper } from './interface-adapters/gateways/notification-data-mapper';
+import { UserDataMapper } from './interface-adapters/gateways/user-data-mapper';
 
 const fsAsync = new FSAsync();
 
@@ -32,9 +33,7 @@ const templateCompiler = new HandlebarsCompiler();
 const commandBus = new CommandBus();
 const knexClient = new KnexClient(
   config.postgresConnectionString,
-  config.databaseSchemas,
-  new DatabaseGateway(),
-  new DatabaseGateway()
+  config.databaseSchemas
 );
 
 // knexClient
@@ -56,14 +55,14 @@ const sendEmailUseCase = new SendEmailUseCase(
   fsAsync
 );
 const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
-  knexClient,
-  knexClient
+  new NotificationDataMapper(knexClient),
+  new UserDataMapper(knexClient)
 );
 
 // COMMAND HANDLERS
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
-  knexClient,
+  new UserDataMapper(knexClient),
   path.join(__dirname, '..', config.templatePath),
   config.templateExtension,
   config.fromEmail,

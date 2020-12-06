@@ -1,6 +1,5 @@
 import { Notification } from '../models/notification';
 
-export interface NotificationRepository {
+export interface NotificationCreator {
   storeNewWindowedNotification(notification: Notification): Promise<void>;
-  getAllPendingNotifications(): Promise<any>;
 }
