@@ -1,9 +1,9 @@
 import { Consumer, EachMessagePayload } from 'kafkajs';
-import { CommandMarker } from '../../interface-adapters/commands/command-marker.interface';
+import { CommandMarker } from '../../domain/commands/command-marker.interface';
 import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
-import { NotificationMessageContent } from '../../interface-adapters/notification-message-content';
-import { SendInstantNotificationCommand } from '../../interface-adapters/commands/send-instant-notification-command';
-import { StoreWindowedNotificationCommand } from '../../interface-adapters/commands/store-windowed-notification-command';
+import { NotificationMessageContent } from '../../domain/notification-message-content';
+import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
+import { StoreWindowedNotificationCommand } from '../../domain/commands/store-windowed-notification-command';
 
 export class KafkaJSConsumer {
   private consumer: Consumer;

@@ -67,6 +67,11 @@ export class ConfigBuilder {
     return this;
   }
 
+  public setDatabaseSchemas(value: string[]): this {
+    this.config.databaseSchemas = value;
+    return this;
+  }
+
   public build(): Config {
     return this.config;
   }

@@ -5,5 +5,5 @@ export class DBNotification {
   public message_payload: Record<string, unknown>;
   public template: string;
   public subject: string;
-  public unique_group_identifiers: { id_array: unknown[] };
+  public unique_group_identifiers: unknown;
 }

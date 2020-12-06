@@ -7,5 +7,6 @@
       "containsHTML": true
     }
   ],
-  "fromEmail": "support@anelixis.com"
+  "fromEmail": "support@anelixis.com",
+  "databaseSchemas": ["notification-service", "public"]
 }

@@ -17,6 +17,7 @@ import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-no
 import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
 import { ConfigComposer } from './infra/config-composer/config-composer';
 import { DatabaseGateway } from './interface-adapters/database/database-gateway';
+import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
 
 const fsAsync = new FSAsync();
 
@@ -31,9 +32,22 @@ const templateCompiler = new HandlebarsCompiler();
 const commandBus = new CommandBus();
 const knexClient = new KnexClient(
   config.postgresConnectionString,
+  config.databaseSchemas,
   new DatabaseGateway(),
   new DatabaseGateway()
 );
+
+knexClient
+  .getAllPendingNotifications()
+  .then((res: any) => console.log('test', JSON.stringify(res, null, 2)))
+  .catch((e) => console.log('test2', e));
+
+const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
+  knexClient,
+  knexClient,
+  commandBus
+);
+sendWindowedNotificationsUseCase.execute();
 
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(

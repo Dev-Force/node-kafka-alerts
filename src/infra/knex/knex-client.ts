@@ -1,30 +1,53 @@
 import * as knex from 'knex';
 import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
+import { TimeWindow } from '../../domain/models/time-window';
 import { User } from '../../domain/models/user';
 import { NotificationRepository } from '../../domain/port-interfaces/notification-repository.interface';
+import { TimeWindowRepository } from '../../domain/port-interfaces/time-window-repository.interface';
 import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
 import { DatabaseAccessor } from '../../interface-adapters/database/database-accessor.interface';
 import { NotificationRow } from '../../interface-adapters/database/notification-row';
 import { UserRow } from '../../interface-adapters/database/user-row';
+import { v4 as uuidv4 } from 'uuid';
 
-export class KnexClient implements NotificationRepository, UserRepository {
+export class KnexClient
+  implements NotificationRepository, UserRepository, TimeWindowRepository {
   private knexConn: knex;
   private userAdapter: DatabaseAccessor;
   private notificationAdapter: DatabaseAccessor;
 
   constructor(
     connStr: string,
+    schemas: string[],
     userAdapter: DatabaseAccessor,
     notificationAdapter: DatabaseAccessor
   ) {
     this.knexConn = knex({
       client: 'pg',
       connection: connStr,
-      searchPath: ['notification-service'],
+      searchPath: schemas,
     });
     this.userAdapter = userAdapter;
     this.notificationAdapter = notificationAdapter;
+  }
+
+  public async getLatestTimeWindow(): Promise<TimeWindow> {
+    const { uuid } = await this.knexConn('time_windows')
+      .select('uuid')
+      .orderBy('id', 'desc')
+      .first();
+
+    const timeWindow = new TimeWindow();
+    timeWindow.uuid = uuid;
+
+    return timeWindow;
+  }
+
+  public async createNewTimeWindow(): Promise<void> {
+    await this.knexConn('time_windows').insert({
+      uuid: uuidv4(),
+    });
   }
 
   public async getUserByUUID(uuid: string): Promise<User> {
@@ -121,25 +144,23 @@ export class KnexClient implements NotificationRepository, UserRepository {
     });
   }
 
-  // TODO: windowing
-  // select last window
-  // Insert new timewindow
-  // SELECT all pending notifications from last window
+  public async getAllPendingNotifications(): Promise<any> {
+    // TODO: per time window or per status
 
-  public async getGroupedNotifications(): Promise<
-    (Partial<NotificationRow> & Partial<UserRow>)[]
-  > {
-    const res = await this.knexConn
+    const res: any[] = await this.knexConn
       .from('notifications')
       .join('users', 'users.uuid', '=', 'notifications.user_uuid')
-      .groupBy('users.uuid')
+      .groupBy('users.uuid', 'notifications.template', 'notifications.channel')
       .select<(Partial<NotificationRow> & Partial<UserRow>)[]>(
-        'uuid',
-        'message_payload',
-        'template'
+        'users.uuid as user_uuid',
+        'template',
+        'channel',
+        this.knexConn.raw(
+          'array_agg(notifications.uuid) as notification_uuids'
+        ),
+        this.knexConn.raw('json_agg(message_payload::json) as message_payloads')
       );
 
     return res;
-    // await this.knexConn.transaction()
   }
 }

@@ -34,5 +34,7 @@ export class SendEmailUseCase
     const compiledPayload = this.templateCompiler.compile(template, payload);
 
     this.emailSender.sendEmail(from, to, subject, isHTML, compiledPayload);
+
+    // TODO: maybe insert Notification sent here.
   }
 }

@@ -27,6 +27,7 @@ export class ConfigComposer {
         .setTemplateExtension(fileConfig.get<string>('templateExtension'))
         .setFromEmail(fileConfig.get<string>('fromEmail'))
         .setTemplates(fileConfig.get<ConfigTemplate[]>('templates'))
+        .setDatabaseSchemas(fileConfig.get<string[]>('databaseSchemas'))
         .build()
     );
   }

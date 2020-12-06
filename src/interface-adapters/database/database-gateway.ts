@@ -20,11 +20,10 @@ export class DatabaseGateway implements DatabaseAccessor {
     dbNotification.template = notification.template;
     dbNotification.user_uuid = notification.user.uuid;
     dbNotification.uuid = notification.uuid;
-    dbNotification.unique_group_identifiers = {
-      id_array: notification.uniqueGroupIdentifiers.map(
-        (ugi) => notification.unmappedData[ugi]
-      ),
-    };
+    dbNotification.unique_group_identifiers = notification.uniqueGroupIdentifiers.reduce<
+      Record<string, unknown>
+    >((acc, ugi) => ({ ...acc, [ugi]: notification.unmappedData[ugi] }), {});
+
     return dbNotification;
   }
 }

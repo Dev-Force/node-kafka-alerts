@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
-import { CommandMarker } from '../../interface-adapters/commands/command-marker.interface';
+import { CommandMarker } from '../../domain/commands/command-marker.interface';
 import * as bodyParser from 'body-parser';
 
 export class ExpressServer {

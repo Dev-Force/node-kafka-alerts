@@ -2,10 +2,10 @@ import { ICommandHandler } from '../../domain/port-interfaces/command-handler.in
 import { CommandHandler } from './command-handler.decorator';
 import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { SendEmailPayload } from '../../use-cases/send-email/send-email-payload';
-import { SendInstantNotificationCommand } from '../commands/send-instant-notification-command';
+import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
 import { UserRepository } from '../../domain/port-interfaces/user-repository.interface.';
 import { ConfigTemplate } from '../../domain/models/config-template';
-import { SendWindowedNotificationsCommand } from '../commands/send-windowed-notifications-command';
+import { SendWindowedNotificationsCommand } from '../../domain/commands/send-windowed-notifications-command';
 
 @CommandHandler(SendWindowedNotificationsCommand)
 export class SendWindowedNotificationsCommandHandler
