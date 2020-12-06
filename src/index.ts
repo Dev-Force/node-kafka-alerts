@@ -37,17 +37,17 @@ const knexClient = new KnexClient(
   new DatabaseGateway()
 );
 
-knexClient
-  .getAllPendingNotifications()
-  .then((res: any) => console.log('test', JSON.stringify(res, null, 2)))
-  .catch((e) => console.log('test2', e));
+// knexClient
+//   .getAllPendingNotifications()
+//   .then((res: any) => console.log('test', JSON.stringify(res, null, 2)))
+//   .catch((e) => console.log('test2', e));
 
-const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
-  knexClient,
-  knexClient,
-  commandBus
-);
-sendWindowedNotificationsUseCase.execute();
+// const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
+//   knexClient,
+//   knexClient,
+//   commandBus
+// );
+// sendWindowedNotificationsUseCase.execute();
 
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(

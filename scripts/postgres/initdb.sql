@@ -51,7 +51,8 @@ CREATE TABLE notifications (
       FOREIGN KEY(time_window_uuid) 
       REFERENCES time_windows(uuid),
 
-    UNIQUE(uuid)
+    UNIQUE(uuid),
+    UNIQUE(unique_group_identifiers, user_uuid, time_window_uuid)
 );
 
 INSERT INTO time_windows (uuid) VALUES ('70d0a457-869c-4d22-a3ea-d75ed3404dbb');
