@@ -8,6 +8,7 @@ import { NotificationDAO } from '../../interface-adapters/gateways/notification-
 import { UserDAO } from '../../interface-adapters/gateways/user-dao.interface';
 import { TimeWindowDAO } from '../../interface-adapters/gateways/time-window-dao.interface';
 import { TimeWindowRow } from '../../interface-adapters/gateways/time-window-row';
+import { GroupedNotificationRow } from '../../interface-adapters/gateways/grouped-notification-row';
 
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
@@ -127,14 +128,14 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
     });
   }
 
-  public async getAllPendingNotifications(): Promise<NotificationRow[]> {
+  public async getAllPendingNotifications(): Promise<GroupedNotificationRow[]> {
     // TODO: per time window or per status
 
-    const res: any[] = await this.knexConn
+    return await this.knexConn
       .from('notifications')
       .join('users', 'users.uuid', '=', 'notifications.user_uuid')
       .groupBy('users.uuid', 'notifications.template', 'notifications.channel')
-      .select<(Partial<NotificationRow> & Partial<UserRow>)[]>(
+      .select<GroupedNotificationRow[]>(
         'users.uuid as user_uuid',
         'template',
         'channel',
@@ -143,7 +144,5 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         ),
         this.knexConn.raw('json_agg(message_payload::json) as message_payloads')
       );
-
-    return res;
   }
 }

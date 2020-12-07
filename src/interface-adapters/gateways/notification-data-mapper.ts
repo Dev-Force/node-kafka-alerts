@@ -3,6 +3,7 @@ import { NotificationStatus } from '../../domain/models/notification-status';
 import { User } from '../../domain/models/user';
 import { NotificationCreator } from '../../domain/port-interfaces/notification-creator.interface';
 import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
+import { GroupedNotificationRow } from './grouped-notification-row';
 import { NotificationDAO } from './notification-dao.interface';
 import { NotificationRow } from './notification-row';
 
@@ -21,8 +22,32 @@ export class NotificationDataMapper
   }
 
   public async getAllPendingNotifications(): Promise<Notification[]> {
-    const notificationRows = await this.notificationDAO.getAllPendingNotifications();
-    return notificationRows.map((n) => this.toDomainNotification(n));
+    const groupedNotificationRows: GroupedNotificationRow[] = await this.notificationDAO.getAllPendingNotifications();
+
+    return groupedNotificationRows
+      .map((gn) => this.groupedNotificationRowToDomainNotifications(gn))
+      .reduce((acc, notifications) => {
+        return [...acc, ...notifications];
+      }, []);
+  }
+
+  private groupedNotificationRowToDomainNotifications(
+    groupedNotificationRow: GroupedNotificationRow
+  ): Notification[] {
+    return groupedNotificationRow.notification_uuids.map(
+      (notificationUUID, idx) => {
+        return new Notification(
+          notificationUUID,
+          new User(groupedNotificationRow.user_uuid, null, null),
+          groupedNotificationRow.message_payloads[idx],
+          groupedNotificationRow.channel,
+          groupedNotificationRow.template,
+          'test', // TODO: fix subject here
+          NotificationStatus.NOTIFICATION_PENDING,
+          []
+        );
+      }
+    );
   }
 
   private toDomainNotification(notificationRow: NotificationRow): Notification {

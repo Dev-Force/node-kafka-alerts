@@ -20,30 +20,23 @@ export class SendWindowedNotificationsUseCase
     const pendingNotifications = await this.notificationFetcher.getAllPendingNotifications();
 
     // TODO: DONT DISCARD NON EMAIL NOTIFICATIONS
-    const pendingBatchNotifications = pendingNotifications.filter(
-      (n) => n.channel === 'EMAIL'
-    );
+    const pendingNotificationPromiseArray = pendingNotifications
+      .filter((n) => n.channel === 'EMAIL')
+      .map((n) =>
+        this.commandDispatcher.dispatch(
+          new SendInstantNotificationCommand({
+            notificationUUID: n.uuid,
+            channel: n.channel,
+            subject: n.subject,
+            template: n.template,
+            uniqueGroupIdentifiers: n.uniqueGroupIdentifiers,
+            unmappedData: n.unmappedData,
+            userUUID: n.user.uuid,
+          } as NotificationMessageContent)
+        )
+      );
 
-    const promiseArray = pendingBatchNotifications.reduce((acc, row) => {
-      const toAppend = row.notification_uuids.map((notificationUUID, idx) => {
-        const notificationContent = new NotificationMessageContent();
-        notificationContent.channel = row.channel;
-        notificationContent.notificationUUID = notificationUUID;
-        notificationContent.subject = 'test';
-        notificationContent.template = row.template;
-
-        notificationContent.unmappedData = row.message_payloads[idx];
-        notificationContent.userUUID = row.user_uuid;
-
-        return this.commandDispatcher.dispatch(
-          new SendInstantNotificationCommand(notificationContent)
-        );
-      });
-
-      return [...acc, ...toAppend];
-    }, []);
-
-    await Promise.all(promiseArray).catch(() => {
+    await Promise.all(pendingNotificationPromiseArray).catch(() => {
       console.log('FAILED TO SEND ALL PENDING NOTIFICATIONS');
     });
 

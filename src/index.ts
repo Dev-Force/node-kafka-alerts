@@ -19,6 +19,7 @@ import { ConfigComposer } from './infra/config-composer/config-composer';
 import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
 import { NotificationDataMapper } from './interface-adapters/gateways/notification-data-mapper';
 import { UserDataMapper } from './interface-adapters/gateways/user-data-mapper';
+import { TimeWindowDataMapper } from './interface-adapters/gateways/time-window-data-mapper';
 
 const fsAsync = new FSAsync();
 
@@ -42,8 +43,8 @@ const knexClient = new KnexClient(
 //   .catch((e) => console.log('test2', e));
 
 // const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
-//   knexClient,
-//   knexClient,
+//   new TimeWindowDataMapper(knexClient),
+//   new NotificationDataMapper(knexClient),
 //   commandBus
 // );
 // sendWindowedNotificationsUseCase.execute();
