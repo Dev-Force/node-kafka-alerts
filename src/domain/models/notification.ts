@@ -1,6 +1,8 @@
 import { NotificationStatus } from './notification-status';
 import { User } from './user';
 
+export const NotificationAggregateType = 'NOTIFICATION';
+
 export class Notification {
   constructor(
     public uuid: string,

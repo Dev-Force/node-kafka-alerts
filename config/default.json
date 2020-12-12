@@ -3,6 +3,7 @@
   "templatePath": "templates",
   "templates": [
     {
+      "subject": "template-example subject",
       "name": "template-example",
       "containsHTML": true
     }

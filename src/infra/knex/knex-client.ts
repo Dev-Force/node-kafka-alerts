@@ -9,6 +9,8 @@ import { UserDAO } from '../../interface-adapters/gateways/user-dao.interface';
 import { TimeWindowDAO } from '../../interface-adapters/gateways/time-window-dao.interface';
 import { TimeWindowRow } from '../../interface-adapters/gateways/time-window-row';
 import { GroupedNotificationRow } from '../../interface-adapters/gateways/grouped-notification-row';
+import { NotificationAggregateType } from '../../domain/models/notification';
+import Knex = require('knex');
 
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
@@ -18,6 +20,32 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
       client: 'pg',
       connection: connStr,
       searchPath: schemas,
+    });
+  }
+
+  public async updateNotificationsToSent(
+    notificationUUIDs: string[]
+  ): Promise<void> {
+    await this.knexConn.transaction(async (trx) => {
+      for (const notUUID of notificationUUIDs) {
+        const newNotificationVersion = await this.getLatestNotificationVersion(
+          trx,
+          notUUID
+        );
+
+        await this.knexConn('events').transacting(trx).insert({
+          aggregate_uuid: notUUID,
+          aggregate_type: NotificationAggregateType,
+          payload: {},
+          payload_type: NotificationStatus.NOTIFICATION_SENT,
+          version: newNotificationVersion,
+        });
+
+        await this.knexConn('notifications')
+          .transacting(trx)
+          .update({ status: NotificationStatus.NOTIFICATION_SENT })
+          .where('uuid', notUUID);
+      }
     });
   }
 
@@ -62,16 +90,10 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         unique_group_identifiers,
       } = notification;
 
-      const lastNotificationVersion = await this.knexConn('events')
-        .transacting(trx)
-        .select('version')
-        .where('aggregate_uuid', uuid)
-        .orderBy('id', 'desc')
-        .first();
-      const newNotificationVersion =
-        lastNotificationVersion != null
-          ? lastNotificationVersion.version + 1
-          : 1;
+      const newNotificationVersion = await this.getLatestNotificationVersion(
+        trx,
+        uuid
+      );
 
       const timeWindowUUID = await this.knexConn('time_windows')
         .transacting(trx)
@@ -144,5 +166,22 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         ),
         this.knexConn.raw('json_agg(message_payload::json) as message_payloads')
       );
+  }
+
+  private async getLatestNotificationVersion(
+    trx: Knex.Transaction,
+    notificationUUID: string
+  ) {
+    const lastNotificationVersion = await this.knexConn('events')
+      .transacting(trx)
+      .select('version')
+      .where('aggregate_uuid', notificationUUID)
+      .andWhere('aggregate_type', NotificationAggregateType)
+      .orderBy('id', 'desc')
+      .first();
+
+    return lastNotificationVersion != null
+      ? lastNotificationVersion.version + 1
+      : 1;
   }
 }

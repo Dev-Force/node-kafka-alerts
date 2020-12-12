@@ -4,12 +4,14 @@ import { SendInstantNotificationCommand } from '../../domain/commands/send-insta
 import { NotificationMessageContent } from '../../domain/notification-message-content';
 import { TimeWindowCreator } from '../../domain/port-interfaces/time-window-creator.interface';
 import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
+import { NotificationMutator } from '../../domain/port-interfaces/notification-mutator.interface';
 
 export class SendWindowedNotificationsUseCase
   implements UseCaseExecutor<void, Promise<void>> {
   constructor(
     private timeWindowCreator: TimeWindowCreator,
     private notificationFetcher: NotificationFetcher,
+    private notificationMutator: NotificationMutator,
     private commandDispatcher: CommandDispatcher<SendInstantNotificationCommand>
   ) {}
 
@@ -41,6 +43,9 @@ export class SendWindowedNotificationsUseCase
     });
 
     // TODO: update send notifications to SENT status
+    await this.notificationMutator.updateNotificationsToSent(
+      pendingNotifications.map((pn) => pn.uuid)
+    );
 
     return;
   }

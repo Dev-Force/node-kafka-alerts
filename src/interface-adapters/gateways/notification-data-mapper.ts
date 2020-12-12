@@ -1,16 +1,28 @@
+import { ConfigTemplate } from '../../domain/models/config-template';
 import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
 import { User } from '../../domain/models/user';
 import { NotificationCreator } from '../../domain/port-interfaces/notification-creator.interface';
 import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
+import { NotificationMutator } from '../../domain/port-interfaces/notification-mutator.interface';
 import { GroupedNotificationRow } from './grouped-notification-row';
 import { NotificationDAO } from './notification-dao.interface';
 import { NotificationRow } from './notification-row';
 
 export class NotificationDataMapper
-  implements NotificationFetcher, NotificationCreator {
-  constructor(private notificationDAO: NotificationDAO) {
+  implements NotificationFetcher, NotificationCreator, NotificationMutator {
+  constructor(
+    private notificationDAO: NotificationDAO,
+    private templates: ConfigTemplate[]
+  ) {
     this.notificationDAO = notificationDAO;
+    this.templates = templates;
+  }
+
+  public async updateNotificationsToSent(
+    notificationUUIDs: string[]
+  ): Promise<void> {
+    await this.notificationDAO.updateNotificationsToSent(notificationUUIDs);
   }
 
   public async storeNewWindowedNotification(
@@ -31,23 +43,31 @@ export class NotificationDataMapper
       }, []);
   }
 
-  private groupedNotificationRowToDomainNotifications(
-    groupedNotificationRow: GroupedNotificationRow
-  ): Notification[] {
-    return groupedNotificationRow.notification_uuids.map(
-      (notificationUUID, idx) => {
-        return new Notification(
+  private groupedNotificationRowToDomainNotifications({
+    notification_uuids,
+    user_uuid,
+    template,
+    message_payloads,
+    channel,
+  }: GroupedNotificationRow): Notification[] {
+    return notification_uuids.map(
+      (notificationUUID, idx) =>
+        new Notification(
           notificationUUID,
-          new User(groupedNotificationRow.user_uuid, null, null),
-          groupedNotificationRow.message_payloads[idx],
-          groupedNotificationRow.channel,
-          groupedNotificationRow.template,
-          'test', // TODO: fix subject here
+          new User(user_uuid, null, null),
+          message_payloads[idx],
+          channel,
+          template,
+          this.getTemplateSubject(template),
           NotificationStatus.NOTIFICATION_PENDING,
           []
-        );
-      }
+        )
     );
+  }
+
+  private getTemplateSubject(template: string) {
+    const templateConfigEntry = this.templates.find((t) => t.name === template);
+    return templateConfigEntry.subject || '';
   }
 
   private toDomainNotification(notificationRow: NotificationRow): Notification {

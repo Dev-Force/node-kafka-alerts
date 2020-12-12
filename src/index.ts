@@ -56,7 +56,7 @@ const sendEmailUseCase = new SendEmailUseCase(
   fsAsync
 );
 const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
-  new NotificationDataMapper(knexClient),
+  new NotificationDataMapper(knexClient, config.templates),
   new UserDataMapper(knexClient)
 );
 
