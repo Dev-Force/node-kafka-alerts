@@ -72,6 +72,11 @@ export class ConfigBuilder {
     return this;
   }
 
+  public setSendWindowedNotificationsCronExpression(value: string): this {
+    this.config.sendWindowedNotificationsCronExpression = value;
+    return this;
+  }
+
   public build(): Config {
     return this.config;
   }

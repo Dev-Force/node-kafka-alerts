@@ -22,6 +22,9 @@ export class ConfigComposer {
         .setPostgresConnectionString(
           `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`
         )
+        .setSendWindowedNotificationsCronExpression(
+          process.env.SEND_WINDOWED_NOTIFICATIONS_CRON_EXPRESSION
+        )
         // from FILE
         .setTemplatePath(fileConfig.get<string>('templatePath'))
         .setTemplateExtension(fileConfig.get<string>('templateExtension'))

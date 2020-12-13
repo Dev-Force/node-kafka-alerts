@@ -17,27 +17,15 @@ export class StoreWindowedNotificationCommandHandler
   }
 
   async handle(cmd: StoreWindowedNotificationCommand): Promise<void> {
-    const {
-      notificationMessageContent: {
-        notificationUUID,
-        userUUID,
-        template,
-        subject,
-        unmappedData,
-        channel,
-        uniqueGroupIdentifiers,
-      },
-    } = cmd;
-
     this.usecase.execute(
       new StoreWindowedNotificationPayload(
-        notificationUUID,
-        userUUID,
-        subject,
-        template,
-        unmappedData,
-        channel,
-        uniqueGroupIdentifiers
+        cmd.notificationMessageContent.notificationUUID,
+        cmd.notificationMessageContent.userUUID,
+        cmd.notificationMessageContent.subject,
+        cmd.notificationMessageContent.template,
+        cmd.notificationMessageContent.unmappedData,
+        cmd.notificationMessageContent.channel,
+        cmd.notificationMessageContent.uniqueGroupIdentifiers
       )
     );
   }

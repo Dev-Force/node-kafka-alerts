@@ -13,4 +13,5 @@ export class Config {
   public templateExtension: string;
   public fromEmail: string;
   public templates: ConfigTemplate[];
+  public sendWindowedNotificationsCronExpression: string;
 }

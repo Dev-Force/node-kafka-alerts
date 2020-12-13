@@ -77,7 +77,10 @@ commandBus.registerDecorated(storeWindowedNotificationsCommandHandler);
 commandBus.registerDecorated(sendWindowedNotificationsCommandHandler);
 
 // Infra
-const cron = new Cron(commandBus, '*/15 * * * *');
+const cron = new Cron(
+  commandBus,
+  config.sendWindowedNotificationsCronExpression
+);
 cron.onTickSendWindowedNotifications();
 cron.startNewCronJob();
 
