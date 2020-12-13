@@ -39,18 +39,6 @@ const knexClient = new KnexClient(
   config.databaseSchemas
 );
 
-// knexClient
-//   .getAllPendingNotifications()
-//   .then((res: any) => console.log('test', JSON.stringify(res, null, 2)))
-//   .catch((e) => console.log('test2', e));
-
-// const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
-//   new TimeWindowDataMapper(knexClient),
-//   new NotificationDataMapper(knexClient),
-//   commandBus
-// );
-// sendWindowedNotificationsUseCase.execute();
-
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(
   templateCompiler,
@@ -88,6 +76,7 @@ commandBus.registerDecorated(sendInstantNotificationCommandHandler);
 commandBus.registerDecorated(storeWindowedNotificationsCommandHandler);
 commandBus.registerDecorated(sendWindowedNotificationsCommandHandler);
 
+// Infra
 const cron = new Cron(commandBus, '*/15 * * * *');
 cron.onTickSendWindowedNotifications();
 cron.startNewCronJob();
