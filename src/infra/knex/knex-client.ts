@@ -10,7 +10,6 @@ import { TimeWindowDAO } from '../../interface-adapters/gateways/time-window-dao
 import { TimeWindowRow } from '../../interface-adapters/gateways/time-window-row';
 import { GroupedNotificationRow } from '../../interface-adapters/gateways/grouped-notification-row';
 import { NotificationAggregateType } from '../../domain/models/notification';
-import Knex = require('knex');
 
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
@@ -79,7 +78,7 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   public async storeNewWindowedNotification(
     notification: NotificationRow
   ): Promise<void> {
-    await this.knexConn.transaction(async (trx) => {
+    await this.knexConn.transaction(async (trx: knex.Transaction) => {
       const {
         uuid,
         user_uuid,
@@ -169,7 +168,7 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   }
 
   private async getLatestNotificationVersion(
-    trx: Knex.Transaction,
+    trx: knex.Transaction,
     notificationUUID: string
   ) {
     const lastNotificationVersion = await this.knexConn('events')
