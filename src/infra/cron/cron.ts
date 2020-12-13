@@ -15,12 +15,12 @@ export class Cron {
     this.cronTime = cronTime;
   }
 
-  public startNewCronJob() {
+  public startNewCronJob(): void {
     this.cronJob = new CronJob(this.cronTime, this.onTick as CronCommand);
     this.cronJob.start();
   }
 
-  public onTickSendWindowedNotifications() {
+  public onTickSendWindowedNotifications(): void {
     this.onTick = () => {
       this.commandBus.dispatch(new SendWindowedNotificationsCommand());
     };
