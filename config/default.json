@@ -8,6 +8,6 @@
       "containsHTML": true
     }
   ],
-  "fromEmail": "support@anelixis.com",
+  "fromEmail": "test@example.com",
   "databaseSchemas": ["notification-service", "public"]
 }
