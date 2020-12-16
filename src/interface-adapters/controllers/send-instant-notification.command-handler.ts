@@ -32,6 +32,7 @@ export class SendInstantNotificationCommandHandler
       template,
       unmappedData,
       userUUID,
+      notificationUUID,
     } = cmd.notificationMessageContent;
     const templatePath = `${this.templateDirPath}/${template}.${this.templateExtension}`;
 
@@ -51,7 +52,11 @@ export class SendInstantNotificationCommandHandler
           subject,
           isHTML,
           templatePath,
-          unmappedData
+          unmappedData,
+          notificationUUID,
+          userUUID,
+          template,
+          channel
         )
       );
     }

@@ -75,6 +75,44 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
     return { uuid, email, phone };
   }
 
+  public async storeNewNotification(
+    notification: NotificationRow
+  ): Promise<void> {
+    await this.knexConn.transaction(async (trx: knex.Transaction) => {
+      const {
+        uuid,
+        user_uuid,
+        channel,
+        message_payload,
+        template,
+        subject,
+        status,
+      } = notification;
+
+      await this.knexConn('events').transacting(trx).insert({
+        aggregate_uuid: uuid,
+        aggregate_type: NotificationAggregateType,
+        payload: notification,
+        payload_type: status,
+        version: 1,
+      });
+
+      await this.knexConn('notifications')
+        .transacting(trx)
+        .insert({
+          uuid,
+          user_uuid,
+          message_payload,
+          channel,
+          template,
+          subject,
+          status,
+        })
+        .onConflict('uuid')
+        .merge();
+    });
+  }
+
   public async storeNewWindowedNotification(
     notification: NotificationRow
   ): Promise<void> {
@@ -116,7 +154,7 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         .transacting(trx)
         .insert({
           aggregate_uuid: uuid,
-          aggregate_type: 'NOTIFICATION',
+          aggregate_type: NotificationAggregateType,
           payload: notification,
           payload_type:
             newNotificationVersion === 1
@@ -138,11 +176,16 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
           template,
           subject,
           status: NotificationStatus.NOTIFICATION_PENDING,
-          time_window_uuid: timeWindowUUID.uuid,
-          unique_group_identifiers,
         })
         .onConflict('uuid')
         .merge();
+
+      await this.knexConn('notification_time_windows').transacting(trx).insert({
+        notification_uuid: uuid,
+        time_window_uuid: timeWindowUUID.uuid,
+        user_uuid,
+        unique_group_identifiers,
+      });
 
       // TODO: handle exception for unique time_window_uuid and unique_group_identifiers combo.
       // We need to skip kafka message if a unique constraint violation happens.
@@ -150,11 +193,18 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   }
 
   public async getAllPendingNotifications(): Promise<GroupedNotificationRow[]> {
-    // TODO: per time window or per status
-
     return await this.knexConn
       .from('notifications')
       .join('users', 'users.uuid', '=', 'notifications.user_uuid')
+      .join(
+        'notification_time_windows',
+        'notification_time_windows.time_window_uuid',
+        '=',
+        'time_windows.uuid'
+      )
+      .where('notifications.status', NotificationStatus.NOTIFICATION_PENDING)
+      // if we want to filter pending notifications by time window we uncomment the below line.
+      // .andWhere('time_windows.uuid', 'UUID_HERE')
       .groupBy('users.uuid', 'notifications.template', 'notifications.channel')
       .select<GroupedNotificationRow[]>(
         'users.uuid as user_uuid',
@@ -170,7 +220,7 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private async getLatestNotificationVersion(
     trx: knex.Transaction,
     notificationUUID: string
-  ) {
+  ): Promise<number> {
     const lastNotificationVersion = await this.knexConn('events')
       .transacting(trx)
       .select('version')

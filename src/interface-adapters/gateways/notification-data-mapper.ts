@@ -19,6 +19,12 @@ export class NotificationDataMapper
     this.templates = templates;
   }
 
+  public async storeNewNotification(notification: Notification): Promise<void> {
+    await this.notificationDAO.storeNewNotification(
+      this.toNotificationRow(notification)
+    );
+  }
+
   public async updateNotificationsToSent(
     notificationUUIDs: string[]
   ): Promise<void> {
@@ -68,31 +74,6 @@ export class NotificationDataMapper
   private getTemplateSubject(template: string) {
     const templateConfigEntry = this.templates.find((t) => t.name === template);
     return templateConfigEntry.subject || '';
-  }
-
-  private toDomainNotification(notificationRow: NotificationRow): Notification {
-    const {
-      uuid,
-      message_payload,
-      channel,
-      template,
-      subject,
-      // status,
-      unique_group_identifiers,
-      user_uuid,
-    } = notificationRow;
-
-    const user = new User(user_uuid, null, null);
-    return new Notification(
-      uuid,
-      user,
-      message_payload,
-      channel,
-      template,
-      subject,
-      NotificationStatus.NOTIFICATION_PENDING, // TODO: fix status pending to status from db
-      Object.keys(unique_group_identifiers)
-    );
   }
 
   private toNotificationRow(notification: Notification): NotificationRow {

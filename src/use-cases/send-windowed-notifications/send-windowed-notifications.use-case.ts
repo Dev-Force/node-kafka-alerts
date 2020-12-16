@@ -42,7 +42,6 @@ export class SendWindowedNotificationsUseCase
       console.log('FAILED TO SEND ALL PENDING NOTIFICATIONS');
     });
 
-    // TODO: update send notifications to SENT status
     await this.notificationMutator.updateNotificationsToSent(
       pendingNotifications.map((pn) => pn.uuid)
     );

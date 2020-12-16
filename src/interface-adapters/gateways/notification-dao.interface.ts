@@ -5,4 +5,5 @@ export interface NotificationDAO {
   storeNewWindowedNotification(notification: NotificationRow): Promise<void>;
   getAllPendingNotifications(): Promise<GroupedNotificationRow[]>;
   updateNotificationsToSent(notificationUUIDs: string[]): Promise<void>;
+  storeNewNotification(notification: NotificationRow): Promise<void>;
 }
