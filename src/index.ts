@@ -23,43 +23,53 @@ import { TimeWindowDataMapper } from './interface-adapters/gateways/time-window-
 import { Cron } from './infra/cron/cron';
 import { SendWindowedNotificationsCommandHandler } from './interface-adapters/controllers/send-windowed-notifications.command-handler';
 
+// INIT DRIVEN ACTORS
 const fsAsync = new FSAsync();
 
 const configComposer = new ConfigComposer();
 configComposer.initialize();
+
 const config = configComposer.composeConfig();
 
 const emailSender = new MockSendGridClient(config.emailSenderAPIKey);
 const templateCompiler = new HandlebarsCompiler();
 
-// INIT BUS
 const commandBus = new CommandBus();
 const knexClient = new KnexClient(
   config.postgresConnectionString,
   config.databaseSchemas
 );
 
+// DATA MAPPERS
+const notificationDataMapper = new NotificationDataMapper(
+  knexClient,
+  config.templates
+);
+const userDataMapper = new UserDataMapper(knexClient);
+const timeWindowDataMapper = new TimeWindowDataMapper(knexClient);
+
 // USE CASES
 const sendEmailUseCase = new SendEmailUseCase(
+  notificationDataMapper,
   templateCompiler,
   emailSender,
   fsAsync
 );
 const storeWindowedNotificationsUseCase = new StoreWindowedNotificationsUseCase(
-  new NotificationDataMapper(knexClient, config.templates),
-  new UserDataMapper(knexClient)
+  notificationDataMapper,
+  userDataMapper
 );
 const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
-  new TimeWindowDataMapper(knexClient),
-  new NotificationDataMapper(knexClient, config.templates),
-  new NotificationDataMapper(knexClient, config.templates),
+  timeWindowDataMapper,
+  notificationDataMapper,
+  notificationDataMapper,
   commandBus
 );
 
 // COMMAND HANDLERS
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
   sendEmailUseCase,
-  new UserDataMapper(knexClient),
+  userDataMapper,
   path.join(__dirname, '..', config.templatePath),
   config.templateExtension,
   config.fromEmail,
@@ -76,7 +86,7 @@ commandBus.registerDecorated(sendInstantNotificationCommandHandler);
 commandBus.registerDecorated(storeWindowedNotificationsCommandHandler);
 commandBus.registerDecorated(sendWindowedNotificationsCommandHandler);
 
-// Infra
+// INIT PRIMARY ACTORS
 const cron = new Cron(
   commandBus,
   config.sendWindowedNotificationsCronExpression
