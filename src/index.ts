@@ -14,7 +14,7 @@ import { SendInstantNotificationCommandHandler } from './interface-adapters/cont
 import { KnexClient } from './infra/knex/knex-client';
 import { StoreWindowedNotificationCommandHandler } from './interface-adapters/controllers/store-windowed-notification.command-handler';
 import { StoreWindowedNotificationsUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
-import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
+// import { MockSendGridClient } from './infra/sendgrid/mock-sendgrid-client';
 import { ConfigComposer } from './infra/config-composer/config-composer';
 import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
 import { NotificationDataMapper } from './interface-adapters/gateways/notification-data-mapper';

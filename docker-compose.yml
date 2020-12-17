@@ -25,7 +25,7 @@ services:
       - zookeeper
     environment:
       ZOOKEEPER_CONNECT: zookeeper:2181
-      ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
     restart: always
