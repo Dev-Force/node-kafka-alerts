@@ -19,7 +19,6 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
       client: 'pg',
       connection: connStr,
       searchPath: schemas,
-      debug: true,
     });
   }
 
