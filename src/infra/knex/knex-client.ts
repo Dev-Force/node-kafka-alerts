@@ -19,6 +19,7 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
       client: 'pg',
       connection: connStr,
       searchPath: schemas,
+      debug: true,
     });
   }
 
@@ -198,9 +199,9 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
       .join('users', 'users.uuid', '=', 'notifications.user_uuid')
       .join(
         'notification_time_windows',
-        'notification_time_windows.time_window_uuid',
+        'notification_time_windows.user_uuid',
         '=',
-        'time_windows.uuid'
+        'notifications.user_uuid'
       )
       .where('notifications.status', NotificationStatus.NOTIFICATION_PENDING)
       // if we want to filter pending notifications by time window we uncomment the below line.
