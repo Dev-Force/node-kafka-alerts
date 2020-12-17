@@ -1,8 +1,8 @@
 {
   "name": "node-kafka-alerts",
   "version": "1.0.0",
-  "description": "curl -i -X POST -H \"Accept:application/json\" -H \"Content-Type:application/json\" --data-binary @connect-payload.json localhost:8083/connectors/",
-  "main": "index.js",
+  "description": "",
+  "main": "dist/index.js",
   "scripts": {
     "start:dist": "node ./dist/index.js",
     "start": "node --inspect=5858 -r ts-node/register ./src/index.ts",
