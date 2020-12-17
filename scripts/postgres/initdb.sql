@@ -45,7 +45,7 @@ CREATE TABLE notifications (
       FOREIGN KEY(user_uuid) 
       REFERENCES users(uuid),
 
-    UNIQUE(uuid),
+    UNIQUE(uuid)
 );
 
 
