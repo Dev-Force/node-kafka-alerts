@@ -26,12 +26,13 @@ Also check `config/default.json` file in order to change configuration values to
   
 ### Production
 
- ```bash
+```bash
 cp .env.example .env
 cp config/default.json config/production.json
 ```
 
 Change `.env` values to the correct ones including setting `COMPOSE_FILE` variable to `docker-compose.yml:docker-compose.prod.yml`.
+
 Change `config/production.json` file in order to change configuration values to your liking.
 
 
@@ -55,6 +56,9 @@ Change `config/production.json` file in order to change configuration values to 
 ## Features
 
 Enforces *Clean Architecture's Dependency Rule* using *ESLint*.
+
 Uses *prettier* for *formatting*.
+
 Uses *husky* for *git hooks*.
+
 Uses *pm2* for production deployments.
