@@ -39,21 +39,18 @@ Change `config/production.json` file in order to change configuration values to 
 
 ### Make 
 
-Build docker container and run the application:
-```bash 
-make build-and-run
-```
+- `make build-and-run` *(Build docker container and run the application)*
 
 ### NPM Commands
 
-**start:dist** => node ./dist/index.js *(Runs transpiled Javascript from `dist` folder)*
-**start:watch** => nodemon *(Runs nodemon and listens to file changes)*
-**start:dev** => ts-node src/index.ts *(Runs index.ts directly without any transpilation)*
-**build** => tsc *(Transpiles Typescript to Javascript and places it to `dist` folder)*
-**coverage** => nyc -r lcov -e .ts -x "*.test.ts" npm run test *(Runs tests)*
-**prettier:check** => prettier --check ./src *(Checks if the formatting is OK)*
-**prettier:format** => prettier --write ./src *(Formats the codebase)*
-**eslint** => eslint ./src *(Checks for linting issues)*
+- `start:dist` => node ./dist/index.js *(Runs transpiled Javascript from `dist` folder)*
+- `start:watch` => nodemon *(Runs nodemon and listens to file changes)*
+- `start:dev` => ts-node src/index.ts *(Runs index.ts directly without any transpilation)*
+- `build` => tsc *(Transpiles Typescript to Javascript and places it to `dist` folder)*
+- `coverage` => nyc -r lcov -e .ts -x "*.test.ts" npm run test *(Runs tests)*
+- `prettier:check` => prettier --check ./src *(Checks if the formatting is OK)*
+- `prettier:format` => prettier --write ./src *(Formats the codebase)*
+- `eslint` => eslint ./src *(Checks for linting issues)*
 
 ## Features
 
