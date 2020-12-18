@@ -1,3 +1,5 @@
+export const UserAggregateType = 'USER';
+
 export class User {
   constructor(
     public uuid: string,
