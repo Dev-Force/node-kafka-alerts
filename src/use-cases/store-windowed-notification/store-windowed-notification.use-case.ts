@@ -10,10 +10,7 @@ export class StoreWindowedNotificationsUseCase
   constructor(
     private notificationCreator: NotificationCreator,
     private userFetcher: UserFetcher
-  ) {
-    this.notificationCreator = notificationCreator;
-    this.userFetcher = userFetcher;
-  }
+  ) {}
 
   async execute(
     storeWindowedNotificationPayload: StoreWindowedNotificationPayload

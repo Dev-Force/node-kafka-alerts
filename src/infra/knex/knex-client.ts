@@ -75,6 +75,19 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
     return { uuid, email, phone };
   }
 
+  public async saveUser(userRow: UserRow): Promise<void> {
+    const { uuid, email, phone } = userRow;
+
+    await this.knexConn('users')
+      .insert({
+        uuid,
+        email,
+        phone,
+      })
+      .onConflict('uuid')
+      .merge();
+  }
+
   public async storeNewNotification(
     notification: NotificationRow
   ): Promise<void> {

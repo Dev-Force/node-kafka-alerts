@@ -14,10 +14,7 @@ export class NotificationDataMapper
   constructor(
     private notificationDAO: NotificationDAO,
     private templates: ConfigTemplate[]
-  ) {
-    this.notificationDAO = notificationDAO;
-    this.templates = templates;
-  }
+  ) {}
 
   public async storeNewNotification(notification: Notification): Promise<void> {
     await this.notificationDAO.storeNewNotification(

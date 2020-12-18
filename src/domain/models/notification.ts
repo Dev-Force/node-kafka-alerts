@@ -13,14 +13,5 @@ export class Notification {
     public subject: string,
     public status: NotificationStatus = NotificationStatus.NOTIFICATION_PENDING,
     public uniqueGroupIdentifiers: string[]
-  ) {
-    this.uuid = uuid;
-    this.user = user;
-    this.unmappedData = unmappedData;
-    this.channel = channel;
-    this.template = template;
-    this.subject = subject;
-    this.status = status;
-    this.uniqueGroupIdentifiers = uniqueGroupIdentifiers;
-  }
+  ) {}
 }

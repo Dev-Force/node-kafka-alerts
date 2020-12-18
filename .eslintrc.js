@@ -30,6 +30,7 @@ module.exports = {
     ],
     'no-console': 1, // Means warning
     'prettier/prettier': 2, // Means error
+    'no-case-declarations': 0
   },
   env: {
     node: true,

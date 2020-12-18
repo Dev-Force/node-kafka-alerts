@@ -106,6 +106,7 @@ const kafka = new Kafka({
 const kafkaConsumer = new KafkaJSConsumer(
   config.instantNotificationTopic,
   config.windowedNotificationTopic,
+  config.userTopic,
   kafka.consumer({ groupId: config.kafkaGroupId }),
   commandBus
 );

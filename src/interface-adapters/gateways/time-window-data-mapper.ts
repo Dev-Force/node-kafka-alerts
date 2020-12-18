@@ -6,9 +6,7 @@ import { TimeWindowRow } from './time-window-row';
 
 export class TimeWindowDataMapper
   implements TimeWindowCreator, TimeWindowFetcher {
-  constructor(private timeWindowDAO: TimeWindowDAO) {
-    this.timeWindowDAO = timeWindowDAO;
-  }
+  constructor(private timeWindowDAO: TimeWindowDAO) {}
 
   public async createNewTimeWindow(): Promise<void> {
     await this.timeWindowDAO.createNewTimeWindow();

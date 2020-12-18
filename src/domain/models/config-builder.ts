@@ -22,6 +22,11 @@ export class ConfigBuilder {
     return this;
   }
 
+  public setUserTopic(userTopic: string): this {
+    this.config.userTopic = userTopic;
+    return this;
+  }
+
   public setEmailSenderAPIKey(key: string): this {
     this.config.emailSenderAPIKey = key;
     return this;

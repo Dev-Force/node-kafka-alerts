@@ -4,30 +4,23 @@ import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatch
 import { NotificationMessageContent } from '../../domain/notification-message-content';
 import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
 import { StoreWindowedNotificationCommand } from '../../domain/commands/store-windowed-notification-command';
+import { SaveUserCommand } from '../../domain/commands/save-user-command';
 
 export class KafkaJSConsumer {
-  private consumer: Consumer;
-  private instantNotificationTopic: string;
-  private windowedNotificationsTopic: string;
-  private commandBus: CommandDispatcher<CommandMarker>;
-
   constructor(
-    instantNotificationTopic: string,
-    windowedNotificationsTopic: string,
-    consumer: Consumer,
-    commandBus: CommandDispatcher<CommandMarker>
-  ) {
-    this.consumer = consumer;
-    this.instantNotificationTopic = instantNotificationTopic;
-    this.windowedNotificationsTopic = windowedNotificationsTopic;
-    this.commandBus = commandBus;
-  }
+    private instantNotificationTopic: string,
+    private windowedNotificationsTopic: string,
+    private userTopic: string,
+    private consumer: Consumer,
+    private commandBus: CommandDispatcher<CommandMarker>
+  ) {}
 
   async consume(): Promise<void> {
     const {
       consumer,
       instantNotificationTopic,
       windowedNotificationsTopic,
+      userTopic,
     } = this;
 
     // Consuming
@@ -38,6 +31,10 @@ export class KafkaJSConsumer {
     });
     await consumer.subscribe({
       topic: windowedNotificationsTopic,
+      fromBeginning: true,
+    });
+    await consumer.subscribe({
+      topic: userTopic,
       fromBeginning: true,
     });
 
@@ -51,7 +48,9 @@ export class KafkaJSConsumer {
           case instantNotificationTopic:
             await this.commandBus.dispatch(
               new SendInstantNotificationCommand(
-                this.deserializeMessage(message.value)
+                this.deserializeMessage<NotificationMessageContent>(
+                  message.value
+                )
               )
             );
             break;
@@ -59,8 +58,19 @@ export class KafkaJSConsumer {
           case windowedNotificationsTopic:
             await this.commandBus.dispatch(
               new StoreWindowedNotificationCommand(
-                this.deserializeMessage(message.value)
+                this.deserializeMessage<NotificationMessageContent>(
+                  message.value
+                )
               )
+            );
+            break;
+
+          case userTopic:
+            const { uuid, email, phone } = this.deserializeMessage<
+              SaveUserCommand
+            >(message.value);
+            await this.commandBus.dispatch(
+              new SaveUserCommand(uuid, email, phone)
             );
             break;
 
@@ -73,7 +83,7 @@ export class KafkaJSConsumer {
     return;
   }
 
-  private deserializeMessage(payload: Buffer): NotificationMessageContent {
+  private deserializeMessage<Output>(payload: Buffer): Output {
     return JSON.parse(payload.toString('utf8'));
   }
 }

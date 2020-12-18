@@ -15,11 +15,7 @@ export class SendEmailUseCase
     private templateCompiler: Compiler,
     private emailSender: EmailSender,
     private fileReader: FileReader
-  ) {
-    this.templateCompiler = templateCompiler;
-    this.emailSender = emailSender;
-    this.fileReader = fileReader;
-  }
+  ) {}
 
   async execute(sendEmailPayload: SendEmailPayload): Promise<void> {
     const {

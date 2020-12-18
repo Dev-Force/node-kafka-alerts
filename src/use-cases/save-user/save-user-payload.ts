@@ -1,4 +1,4 @@
-export class User {
+export class SaveUserPayload {
   constructor(
     public uuid: string,
     public email: string,

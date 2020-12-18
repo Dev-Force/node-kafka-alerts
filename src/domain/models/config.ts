@@ -3,6 +3,7 @@ import { ConfigTemplate } from './config-template';
 export class Config {
   public instantNotificationTopic: string;
   public windowedNotificationTopic: string;
+  public userTopic: string;
   public emailSenderAPIKey: string;
   public kafkaGroupId: string;
   public kafkaHost: string;

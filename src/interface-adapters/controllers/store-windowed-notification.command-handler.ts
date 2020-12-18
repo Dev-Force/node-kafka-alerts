@@ -12,9 +12,7 @@ export class StoreWindowedNotificationCommandHandler
       StoreWindowedNotificationPayload,
       Promise<void>
     >
-  ) {
-    this.usecase = usecase;
-  }
+  ) {}
 
   async handle(cmd: StoreWindowedNotificationCommand): Promise<void> {
     this.usecase.execute(

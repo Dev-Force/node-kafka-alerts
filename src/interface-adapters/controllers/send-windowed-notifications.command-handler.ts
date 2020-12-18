@@ -11,9 +11,7 @@ export class SendWindowedNotificationsCommandHandler
       void,
       Promise<void>
     >
-  ) {
-    this.sendWindowedNotificationsUsecase = sendWindowedNotificationsUsecase;
-  }
+  ) {}
 
   async handle(): Promise<void> {
     this.sendWindowedNotificationsUsecase.execute();

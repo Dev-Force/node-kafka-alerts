@@ -16,14 +16,7 @@ export class SendInstantNotificationCommandHandler
     private templateExtension: string,
     private fromEmail: string,
     private configTemplates: ConfigTemplate[]
-  ) {
-    this.sendEmailUsecase = sendEmailUsecase;
-    this.userFetcher = userFetcher;
-    this.templateDirPath = templateDirPath;
-    this.templateExtension = templateExtension;
-    this.fromEmail = fromEmail;
-    this.configTemplates = configTemplates;
-  }
+  ) {}
 
   async handle(cmd: SendInstantNotificationCommand): Promise<void> {
     const {

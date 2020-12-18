@@ -10,10 +10,7 @@ export class Cron {
   constructor(
     private commandBus: CommandDispatcher<CommandMarker>,
     private cronTime: string
-  ) {
-    this.commandBus = commandBus;
-    this.cronTime = cronTime;
-  }
+  ) {}
 
   public startNewCronJob(): void {
     this.cronJob = new CronJob(this.cronTime, this.onTick as CronCommand);

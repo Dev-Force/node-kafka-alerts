@@ -15,6 +15,7 @@ export class ConfigComposer {
         // from ENV
         .setInstantNotificationTopic(process.env.INSTANT_NOTIFICATIONS_TOPIC)
         .setWindowedNotificationTopic(process.env.WINDOWED_NOTIFICATIONS_TOPIC)
+        .setUserTopic(process.env.USER_TOPIC)
         .setEmailSenderAPIKey(process.env.SENDGRID_API_KEY)
         .setKafkaGroupId(process.env.KAFKA_GROUP_ID)
         .setKafkaPort(process.env.KAFKA_PORT)
