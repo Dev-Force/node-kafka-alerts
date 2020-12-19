@@ -23,6 +23,8 @@ import { TimeWindowDataMapper } from './interface-adapters/gateways/time-window-
 import { Cron } from './infra/cron/cron';
 import { SendWindowedNotificationsCommandHandler } from './interface-adapters/controllers/send-windowed-notifications.command-handler';
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
+import { SaveUserCommandHandler } from './interface-adapters/controllers/save-user.command-handler';
+import { SaveUserUseCase } from './use-cases/save-user/save-user.use-case';
 
 // INIT DRIVEN ACTORS
 const fsAsync = new FSAsync();
@@ -67,6 +69,7 @@ const sendWindowedNotificationsUseCase = new SendWindowedNotificationsUseCase(
   notificationDataMapper,
   commandBus
 );
+const saveUserUseCase = new SaveUserUseCase(userDataMapper);
 
 // COMMAND HANDLERS
 const sendInstantNotificationCommandHandler = new SendInstantNotificationCommandHandler(
@@ -83,10 +86,12 @@ const storeWindowedNotificationsCommandHandler = new StoreWindowedNotificationCo
 const sendWindowedNotificationsCommandHandler = new SendWindowedNotificationsCommandHandler(
   sendWindowedNotificationsUseCase
 );
+const saveUserCommandHandler = new SaveUserCommandHandler(saveUserUseCase);
 
 commandBus.registerDecorated(sendInstantNotificationCommandHandler);
 commandBus.registerDecorated(storeWindowedNotificationsCommandHandler);
 commandBus.registerDecorated(sendWindowedNotificationsCommandHandler);
+commandBus.registerDecorated(saveUserCommandHandler);
 
 // INIT PRIMARY ACTORS
 const cron = new Cron(
