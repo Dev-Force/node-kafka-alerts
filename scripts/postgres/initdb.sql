@@ -20,7 +20,7 @@ CREATE TABLE events (
   UNIQUE(aggregate_uuid, version)
 );
 
-CREATE INDEX aggregate_uuid_idx ON events(aggregate_uuid);
+CREATE INDEX events_aggregate_uuid_idx ON events(aggregate_uuid);
 
 CREATE TABLE time_windows (
   id SERIAL primary key not null,

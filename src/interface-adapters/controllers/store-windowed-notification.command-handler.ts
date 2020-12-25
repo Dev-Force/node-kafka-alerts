@@ -15,7 +15,7 @@ export class StoreWindowedNotificationCommandHandler
   ) {}
 
   async handle(cmd: StoreWindowedNotificationCommand): Promise<void> {
-    this.usecase.execute(
+    await this.usecase.execute(
       new StoreWindowedNotificationPayload(
         cmd.notificationMessageContent.notificationUUID,
         cmd.notificationMessageContent.userUUID,

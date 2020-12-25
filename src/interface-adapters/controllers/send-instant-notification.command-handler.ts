@@ -38,7 +38,7 @@ export class SendInstantNotificationCommandHandler
 
     if (channel === 'EMAIL') {
       const { fromEmail } = this;
-      this.sendEmailUsecase.execute(
+      await this.sendEmailUsecase.execute(
         new SendEmailPayload(
           fromEmail,
           usr.email,

@@ -1,10 +1,12 @@
-import { Consumer, EachMessagePayload } from 'kafkajs';
+import { Consumer, EachBatchPayload } from 'kafkajs';
 import { CommandMarker } from '../../domain/commands/command-marker.interface';
 import { CommandDispatcher } from '../../domain/port-interfaces/command-dispatcher.interface';
 import { NotificationMessageContent } from '../../domain/notification-message-content';
 import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
 import { StoreWindowedNotificationCommand } from '../../domain/commands/store-windowed-notification-command';
 import { SaveUserCommand } from '../../domain/commands/save-user-command';
+import { isSkippableError } from '../../domain/errors/skippable-error.decorator';
+import { isRetryableError } from '../../domain/errors/retryable-error.decorator';
 
 export class KafkaJSConsumer {
   constructor(
@@ -38,44 +40,66 @@ export class KafkaJSConsumer {
       fromBeginning: true,
     });
 
-    // TODO: On some errors retry.
-    // Else skip message. (right now, all messages are skipped if there is an error.)
     await consumer.run({
-      eachMessage: async (payload: EachMessagePayload): Promise<void> => {
-        const { message, topic } = payload;
+      eachBatch: async (payload: EachBatchPayload) => {
+        const { batch, resolveOffset, heartbeat } = payload;
 
-        switch (topic) {
-          case instantNotificationTopic:
-            await this.commandBus.dispatch(
-              new SendInstantNotificationCommand(
-                this.deserializeMessage<NotificationMessageContent>(
-                  message.value
-                )
-              )
-            );
-            break;
+        for (const message of batch.messages) {
+          try {
+            switch (batch.topic) {
+              case instantNotificationTopic:
+                await this.commandBus.dispatch(
+                  new SendInstantNotificationCommand(
+                    this.deserializeMessage<NotificationMessageContent>(
+                      message.value
+                    )
+                  )
+                );
+                break;
 
-          case windowedNotificationsTopic:
-            await this.commandBus.dispatch(
-              new StoreWindowedNotificationCommand(
-                this.deserializeMessage<NotificationMessageContent>(
-                  message.value
-                )
-              )
-            );
-            break;
+              case windowedNotificationsTopic:
+                await this.commandBus.dispatch(
+                  new StoreWindowedNotificationCommand(
+                    this.deserializeMessage<NotificationMessageContent>(
+                      message.value
+                    )
+                  )
+                );
+                break;
 
-          case userTopic:
-            const { uuid, email, phone } = this.deserializeMessage<
-              SaveUserCommand
-            >(message.value);
-            await this.commandBus.dispatch(
-              new SaveUserCommand(uuid, email, phone)
-            );
-            break;
+              case userTopic:
+                const { uuid, email, phone } = this.deserializeMessage<
+                  SaveUserCommand
+                >(message.value);
+                await this.commandBus.dispatch(
+                  new SaveUserCommand(uuid, email, phone)
+                );
+                break;
 
-          default:
-            console.log('no such topic command');
+              default:
+                console.log('no such topic command');
+            }
+          } catch (e) {
+            // if error is retryable throw error to eachBatch.
+            if (isRetryableError(e)) {
+              console.log('Retryable error:', e.message);
+              throw e;
+            }
+
+            // if error is skippable resolve offset.
+            if (isSkippableError(e)) {
+              console.log('Skippable error:', e.message);
+              resolveOffset(message.offset);
+              await heartbeat();
+              continue;
+            }
+
+            // default behaviour.
+            throw e;
+          }
+
+          resolveOffset(message.offset);
+          await heartbeat();
         }
       },
     });

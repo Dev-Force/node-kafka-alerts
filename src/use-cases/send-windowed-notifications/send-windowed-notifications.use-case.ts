@@ -39,7 +39,7 @@ export class SendWindowedNotificationsUseCase
       );
 
     await Promise.all(pendingNotificationPromiseArray).catch(() => {
-      console.log('FAILED TO SEND ALL PENDING NOTIFICATIONS');
+      console.log('Failed to send all pending notifications');
     });
 
     await this.notificationMutator.updateNotificationsToSent(

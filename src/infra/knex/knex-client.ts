@@ -11,6 +11,8 @@ import { TimeWindowRow } from '../../interface-adapters/gateways/time-window-row
 import { GroupedNotificationRow } from '../../interface-adapters/gateways/grouped-notification-row';
 import { NotificationAggregateType } from '../../domain/models/notification';
 import { UserAggregateType } from '../../domain/models/user';
+import { UniqueTimeWindowNotificationError } from '../../domain/errors/unique-time-window-notification-error';
+import { UniqueAggregateUUIDVersionError } from '../../domain/errors/unique-aggregate-uuid-version-error';
 
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
@@ -166,18 +168,6 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         .orderBy('id', 'desc')
         .first();
 
-      // // The following would ensure time window consistency using OCC.
-      // // We are dropping this for now. Without this a notification can enter a previous
-      // // time window if something goes wrong. We recover from this by sending
-      // // this notification in the next time window.
-      // await this.knexConn('events').transacting(trx).insert({
-      //   aggregate_uuid: timeWindowUUID,
-      //   aggregate_type: 'TIME_WINDOW',
-      //   payload_type: 'TIME_WINDOW_NOTIFICATION_ADDED',
-      //   payload: { notification_uuid: uuid },
-      //   version: lastTimeWindowVersion + 1
-      // });
-
       await this.knexConn('events')
         .transacting(trx)
         .insert({
@@ -189,10 +179,20 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
               ? 'NOTIFICATION_STORED'
               : 'NOTIFICATION_UPDATED',
           version: newNotificationVersion,
-        });
+        })
+        .catch((e) => {
+          // version and aggregate_uuid unique constraint violation (OCC on notification update).
+          if (
+            e.code === '23505' &&
+            /events_aggregate_uuid_version_key/.test(e.message)
+          ) {
+            throw new UniqueAggregateUUIDVersionError(`
+              Conflict while trying to insert event for notification with uuid ${uuid}
+            `);
+          }
 
-      // TODO: version and aggregate_uuid unique constraint violation (OCC on notification update)
-      // (rarely happens) retries consumption kafka message.
+          throw e;
+        });
 
       await this.knexConn('notifications')
         .transacting(trx)
@@ -208,15 +208,35 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         .onConflict('uuid')
         .merge();
 
-      await this.knexConn('notification_time_windows').transacting(trx).insert({
-        notification_uuid: uuid,
-        time_window_uuid: timeWindowUUID.uuid,
-        user_uuid,
-        unique_group_identifiers,
-      });
+      await this.knexConn('notification_time_windows')
+        .transacting(trx)
+        .insert({
+          notification_uuid: uuid,
+          time_window_uuid: timeWindowUUID.uuid,
+          user_uuid,
+          unique_group_identifiers,
+        })
+        .catch((e) => {
+          // Handle exception for unique time_window_uuid, unique_group_identifiers, user combo.
+          if (
+            e.code === '23505' &&
+            /notification_time_windows_unique_group_identifiers_user_uui_key/.test(
+              e.message
+            )
+          ) {
+            throw new UniqueTimeWindowNotificationError(
+              `Notification already exists for the current time window with uuid ${
+                timeWindowUUID.uuid
+              } for user with uuid ${user_uuid} and unique group identifiers ${JSON.stringify(
+                unique_group_identifiers,
+                null,
+                2
+              )}`
+            );
+          }
 
-      // TODO: handle exception for unique time_window_uuid and unique_group_identifiers combo.
-      // We need to skip kafka message if a unique constraint violation happens.
+          throw e;
+        });
     });
   }
 

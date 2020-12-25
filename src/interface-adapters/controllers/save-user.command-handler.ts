@@ -12,6 +12,6 @@ export class SaveUserCommandHandler
   ) {}
 
   async handle(cmd: SaveUserCommand): Promise<void> {
-    this.saveUserUsecase.execute(cmd as SaveUserPayload);
+    await this.saveUserUsecase.execute(cmd as SaveUserPayload);
   }
 }
