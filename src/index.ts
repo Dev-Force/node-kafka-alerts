@@ -25,6 +25,10 @@ import { SendWindowedNotificationsCommandHandler } from './interface-adapters/co
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
 import { SaveUserCommandHandler } from './interface-adapters/controllers/save-user.command-handler';
 import { SaveUserUseCase } from './use-cases/save-user/save-user.use-case';
+import { Pino } from './infra/pino/pino';
+
+// TODO: We should inject logger using a dependency injection container (inversifyjs).
+/*const logger = */ new Pino(process.env.NODE_ENV !== 'production');
 
 // INIT DRIVEN ACTORS
 const fsAsync = new FSAsync();
