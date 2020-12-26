@@ -7,6 +7,7 @@
             "max_restarts": 20,
             "instances": 1,
             "max_memory_restart": "200M",
+            "exec_mode": "cluster",
             "env": {
                 "PORT": 3000,
                 "NODE_ENV": "production"
