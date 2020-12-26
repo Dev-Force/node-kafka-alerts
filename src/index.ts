@@ -116,3 +116,13 @@ const kafkaConsumer = new KafkaJSConsumer(
   commandBus
 );
 kafkaConsumer.consume();
+
+process.on('SIGINT', function () {
+  Promise.all([knexClient.destroy(), kafkaConsumer.disconnect()])
+    .then(() => {
+      process.exit(0);
+    })
+    .catch(() => {
+      process.exit(1);
+    });
+});

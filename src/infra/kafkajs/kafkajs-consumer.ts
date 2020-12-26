@@ -17,6 +17,10 @@ export class KafkaJSConsumer {
     private commandBus: CommandDispatcher<CommandMarker>
   ) {}
 
+  public async disconnect(): Promise<void> {
+    await this.consumer.disconnect();
+  }
+
   async consume(): Promise<void> {
     const {
       consumer,

@@ -25,6 +25,10 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
     });
   }
 
+  public destroy(): void {
+    this.knexConn.destroy();
+  }
+
   public async updateNotificationsToSent(
     notificationUUIDs: string[]
   ): Promise<void> {
