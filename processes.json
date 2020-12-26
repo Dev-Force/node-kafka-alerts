@@ -5,7 +5,7 @@
             "script": "./dist/index.js",
             "merge_logs": true,
             "max_restarts": 20,
-            "instances": 4,
+            "instances": 1,
             "max_memory_restart": "200M",
             "env": {
                 "PORT": 3000,
