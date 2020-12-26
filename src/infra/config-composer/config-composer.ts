@@ -20,6 +20,7 @@ export class ConfigComposer {
         .setKafkaGroupId(process.env.KAFKA_GROUP_ID)
         .setKafkaPort(process.env.KAFKA_PORT)
         .setKafkaHost(process.env.KAFKA_HOST)
+        .setKafkaClientID(process.env.KAFKA_CLIENT_ID)
         .setPostgresConnectionString(
           `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`
         )

@@ -105,7 +105,7 @@ const expressApp = new ExpressServer(commandBus);
 expressApp.init();
 
 const kafka = new Kafka({
-  clientId: 'my-app',
+  clientId: config.kafkaClientID,
   brokers: [`${config.kafkaHost}:${config.kafkaPort}`],
 });
 const kafkaConsumer = new KafkaJSConsumer(

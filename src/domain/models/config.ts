@@ -8,6 +8,7 @@ export class Config {
   public kafkaGroupId: string;
   public kafkaHost: string;
   public kafkaPort: string;
+  public kafkaClientID: string;
   public postgresConnectionString: string;
   public databaseSchemas: string[];
   public templatePath: string;

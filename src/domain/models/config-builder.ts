@@ -47,6 +47,11 @@ export class ConfigBuilder {
     return this;
   }
 
+  public setKafkaClientID(value: string): this {
+    this.config.kafkaClientID = value;
+    return this;
+  }
+
   public setPostgresConnectionString(value: string): this {
     this.config.postgresConnectionString = value;
     return this;
