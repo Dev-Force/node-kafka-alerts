@@ -5,14 +5,24 @@ import { NotificationMessageContent } from '../../domain/notification-message-co
 import { TimeWindowCreator } from '../../domain/port-interfaces/time-window-creator.interface';
 import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
 import { NotificationMutator } from '../../domain/port-interfaces/notification-mutator.interface';
+import { inject, injectable } from 'inversify';
+import { Logger } from '../../domain/port-interfaces/logger.interface';
 
+@injectable()
 export class SendWindowedNotificationsUseCase
   implements UseCaseExecutor<void, Promise<void>> {
   constructor(
-    private timeWindowCreator: TimeWindowCreator,
+    @inject('TimeWindowCreator') private timeWindowCreator: TimeWindowCreator,
+    @inject('NotificationFetcher')
     private notificationFetcher: NotificationFetcher,
+    @inject('NotificationMutator')
     private notificationMutator: NotificationMutator,
-    private commandDispatcher: CommandDispatcher<SendInstantNotificationCommand>
+    @inject('CommandDispatcher')
+    private commandDispatcher: CommandDispatcher<
+      SendInstantNotificationCommand
+    >,
+    @inject('Logger')
+    private logger: Logger
   ) {}
 
   public async execute(): Promise<void> {
@@ -39,7 +49,7 @@ export class SendWindowedNotificationsUseCase
       );
 
     await Promise.all(pendingNotificationPromiseArray).catch(() => {
-      console.log('Failed to send all pending notifications');
+      this.logger.info({ message: 'Failed to send all pending notifications' });
     });
 
     await this.notificationMutator.updateNotificationsToSent(

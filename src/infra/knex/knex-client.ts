@@ -13,7 +13,9 @@ import { NotificationAggregateType } from '../../domain/models/notification';
 import { UserAggregateType } from '../../domain/models/user';
 import { UniqueTimeWindowNotificationError } from '../../domain/errors/unique-time-window-notification-error';
 import { UniqueAggregateUUIDVersionError } from '../../domain/errors/unique-aggregate-uuid-version-error';
+import { injectable } from 'inversify';
 
+@injectable()
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
   private knexConn: knex;
 

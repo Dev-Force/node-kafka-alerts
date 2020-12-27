@@ -1,12 +1,14 @@
+import { inject, injectable } from 'inversify';
 import { TimeWindow } from '../../domain/models/time-window';
 import { TimeWindowCreator } from '../../domain/port-interfaces/time-window-creator.interface';
 import { TimeWindowFetcher } from '../../domain/port-interfaces/time-window-fetcher.interface';
 import { TimeWindowDAO } from './time-window-dao.interface';
 import { TimeWindowRow } from './time-window-row';
 
+@injectable()
 export class TimeWindowDataMapper
   implements TimeWindowCreator, TimeWindowFetcher {
-  constructor(private timeWindowDAO: TimeWindowDAO) {}
+  constructor(@inject('TimeWindowDAO') private timeWindowDAO: TimeWindowDAO) {}
 
   public async createNewTimeWindow(): Promise<void> {
     await this.timeWindowDAO.createNewTimeWindow();

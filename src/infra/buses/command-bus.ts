@@ -1,8 +1,9 @@
-import 'reflect-metadata';
 import { ICommandHandler } from '../../domain/port-interfaces/command-handler.interface';
 import { CommandMarker } from '../../domain/commands/command-marker.interface';
 import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/controllers/command-handler.constants';
+import { injectable } from 'inversify';
 
+@injectable()
 export class CommandBus {
   private registryMap = {};
 

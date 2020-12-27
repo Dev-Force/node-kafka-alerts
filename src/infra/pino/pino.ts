@@ -1,10 +1,12 @@
 import * as pino from 'pino';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 export class Pino implements Logger {
   private pino: pino.Logger;
 
-  constructor(prettify: boolean) {
+  constructor(@inject('LoggerPrettify') prettify: boolean) {
     const cfg = {
       prettyPrint: {
         levelFirst: true,

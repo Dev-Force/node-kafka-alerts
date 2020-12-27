@@ -1,9 +1,11 @@
 import * as sendgrid from '@sendgrid/mail';
 import { MailDataRequired } from '@sendgrid/mail';
+import { inject, injectable } from 'inversify';
 import { EmailSender } from '../../domain/port-interfaces/email-sender.interface';
 
+@injectable()
 export class SendGridClient implements EmailSender {
-  constructor(apiKey: string) {
+  constructor(@inject('EmailSenderAPIKey') apiKey: string) {
     sendgrid.setApiKey(apiKey);
   }
 

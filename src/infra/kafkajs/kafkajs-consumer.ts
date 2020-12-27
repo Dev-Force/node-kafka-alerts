@@ -7,21 +7,31 @@ import { StoreWindowedNotificationCommand } from '../../domain/commands/store-wi
 import { SaveUserCommand } from '../../domain/commands/save-user-command';
 import { isSkippableError } from '../../domain/errors/skippable-error.decorator';
 import { isRetryableError } from '../../domain/errors/retryable-error.decorator';
+import { inject, injectable } from 'inversify';
+import { Logger } from '../../domain/port-interfaces/logger.interface';
+import { BrokerConsumer } from '../../domain/port-interfaces/broker-consumer.interface';
 
-export class KafkaJSConsumer {
+@injectable()
+export class KafkaJSConsumer implements BrokerConsumer {
   constructor(
+    @inject('InstantNotificationTopic')
     private instantNotificationTopic: string,
+    @inject('WindowedNotificationsTopic')
     private windowedNotificationsTopic: string,
-    private userTopic: string,
-    private consumer: Consumer,
-    private commandBus: CommandDispatcher<CommandMarker>
+    @inject('UserTopic') private userTopic: string,
+    @inject('KafkaConsumer') private consumer: Consumer,
+    @inject('CommandDispatcher')
+    private commandBus: CommandDispatcher<CommandMarker>,
+    @inject('Logger') private logger: Logger
   ) {}
 
   public async disconnect(): Promise<void> {
     await this.consumer.disconnect();
   }
 
-  async consume(): Promise<void> {
+  public async consume(): Promise<void> {
+    this.logger.info({ message: 'test' });
+
     const {
       consumer,
       instantNotificationTopic,
@@ -81,18 +91,18 @@ export class KafkaJSConsumer {
                 break;
 
               default:
-                console.log('no such topic command');
+                this.logger.info({ message: 'no such topic command' });
             }
           } catch (e) {
             // if error is retryable throw error to eachBatch.
             if (isRetryableError(e)) {
-              console.log('Retryable error:', e.message);
+              this.logger.info({ message: `Retryable error: ${e.message}` });
               throw e;
             }
 
             // if error is skippable resolve offset.
             if (isSkippableError(e)) {
-              console.log('Skippable error:', e.message);
+              this.logger.info({ message: `Skippable error: ${e.message}` });
               resolveOffset(message.offset);
               await heartbeat();
               continue;

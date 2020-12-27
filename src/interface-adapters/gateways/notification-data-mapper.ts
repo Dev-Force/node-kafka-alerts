@@ -1,3 +1,4 @@
+import { inject, injectable } from 'inversify';
 import { ConfigTemplate } from '../../domain/models/config-template';
 import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
@@ -9,11 +10,12 @@ import { GroupedNotificationRow } from './grouped-notification-row';
 import { NotificationDAO } from './notification-dao.interface';
 import { NotificationRow } from './notification-row';
 
+@injectable()
 export class NotificationDataMapper
   implements NotificationFetcher, NotificationCreator, NotificationMutator {
   constructor(
-    private notificationDAO: NotificationDAO,
-    private templates: ConfigTemplate[]
+    @inject('NotificationDAO') private notificationDAO: NotificationDAO,
+    @inject('ConfigTemplates') private templates: ConfigTemplate[]
   ) {}
 
   public async storeNewNotification(notification: Notification): Promise<void> {

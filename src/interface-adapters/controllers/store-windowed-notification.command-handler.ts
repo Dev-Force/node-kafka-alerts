@@ -3,11 +3,14 @@ import { CommandHandler } from './command-handler.decorator';
 import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { StoreWindowedNotificationCommand } from '../../domain/commands/store-windowed-notification-command';
 import { StoreWindowedNotificationPayload } from '../../use-cases/store-windowed-notification/store-windowed-notification-payload';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 @CommandHandler(StoreWindowedNotificationCommand)
 export class StoreWindowedNotificationCommandHandler
   implements ICommandHandler<StoreWindowedNotificationCommand> {
   constructor(
+    @inject('StoreWindowedNotificationUseCase')
     private usecase: UseCaseExecutor<
       StoreWindowedNotificationPayload,
       Promise<void>

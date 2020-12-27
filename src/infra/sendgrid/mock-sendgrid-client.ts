@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
+import { inject, injectable } from 'inversify';
 import { EmailSender } from '../../domain/port-interfaces/email-sender.interface';
+import { Logger } from '../../domain/port-interfaces/logger.interface';
 
+@injectable()
 export class MockSendGridClient implements EmailSender {
-  constructor(_apiKey: string) {
-    console.log('sengrid apikey constructor');
-  }
+  constructor(@inject('Logger') private logger: Logger) {}
 
   async sendEmail(
     _from: string,
@@ -14,6 +15,6 @@ export class MockSendGridClient implements EmailSender {
     _isHtml: boolean,
     _compiledPayload: string
   ): Promise<void> {
-    console.log('sending email');
+    this.logger.info({ message: 'sending email' });
   }
 }

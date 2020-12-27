@@ -7,14 +7,17 @@ import { NotificationCreator } from '../../domain/port-interfaces/notification-c
 import { Notification } from '../../domain/models/notification';
 import { User } from '../../domain/models/user';
 import { NotificationStatus } from '../../domain/models/notification-status';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 export class SendEmailUseCase
   implements UseCaseExecutor<SendEmailPayload, Promise<void>> {
   constructor(
+    @inject('NotificationCreator')
     private notificationCreator: NotificationCreator,
-    private templateCompiler: Compiler,
-    private emailSender: EmailSender,
-    private fileReader: FileReader
+    @inject('Compiler') private templateCompiler: Compiler,
+    @inject('EmailSender') private emailSender: EmailSender,
+    @inject('FileReader') private fileReader: FileReader
   ) {}
 
   async execute(sendEmailPayload: SendEmailPayload): Promise<void> {

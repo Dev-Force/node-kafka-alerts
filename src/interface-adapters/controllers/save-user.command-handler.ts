@@ -3,11 +3,14 @@ import { CommandHandler } from './command-handler.decorator';
 import { UseCaseExecutor } from '../../use-cases/use-case-executor.interface';
 import { SaveUserPayload } from '../../use-cases/save-user/save-user-payload';
 import { SaveUserCommand } from '../../domain/commands/save-user-command';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 @CommandHandler(SaveUserCommand)
 export class SaveUserCommandHandler
   implements ICommandHandler<SaveUserCommand> {
   constructor(
+    @inject('SaveUserUseCase')
     private saveUserUsecase: UseCaseExecutor<SaveUserPayload, Promise<void>>
   ) {}
 

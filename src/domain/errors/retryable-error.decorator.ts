@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { ERROR_METADATA_RETRYABLE } from './error.constants';
 
 // eslint-disable-next-line @typescript-eslint/ban-types

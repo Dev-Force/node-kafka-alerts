@@ -5,17 +5,20 @@ import { SendEmailPayload } from '../../use-cases/send-email/send-email-payload'
 import { SendInstantNotificationCommand } from '../../domain/commands/send-instant-notification-command';
 import { ConfigTemplate } from '../../domain/models/config-template';
 import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
+import { inject, injectable } from 'inversify';
 
+@injectable()
 @CommandHandler(SendInstantNotificationCommand)
 export class SendInstantNotificationCommandHandler
   implements ICommandHandler<SendInstantNotificationCommand> {
   constructor(
+    @inject('SendEmailUseCase')
     private sendEmailUsecase: UseCaseExecutor<SendEmailPayload, Promise<void>>,
-    private userFetcher: UserFetcher,
-    private templateDirPath: string,
-    private templateExtension: string,
-    private fromEmail: string,
-    private configTemplates: ConfigTemplate[]
+    @inject('UserFetcher') private userFetcher: UserFetcher,
+    @inject('TemplateDirPath') private templateDirPath: string,
+    @inject('TemplateExtension') private templateExtension: string,
+    @inject('FromEmail') private fromEmail: string,
+    @inject('ConfigTemplates') private configTemplates: ConfigTemplate[]
   ) {}
 
   async handle(cmd: SendInstantNotificationCommand): Promise<void> {

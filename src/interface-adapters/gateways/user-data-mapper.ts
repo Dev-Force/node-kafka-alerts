@@ -1,11 +1,13 @@
+import { inject, injectable } from 'inversify';
 import { User } from '../../domain/models/user';
 import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
 import { UserSaver } from '../../domain/port-interfaces/user-saver.interface';
 import { UserDAO } from './user-dao.interface';
 import { UserRow } from './user-row';
 
+@injectable()
 export class UserDataMapper implements UserSaver, UserFetcher {
-  constructor(private userDAO: UserDAO) {}
+  constructor(@inject('UserDAO') private userDAO: UserDAO) {}
 
   public async getUserByUUID(uuid: string): Promise<User> {
     return this.toDomainUser(await this.userDAO.getUserByUUID(uuid));
