@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import * as fs from 'fs';
 import * as path from 'path';
 
 import { Consumer, Kafka } from 'kafkajs';
@@ -53,11 +54,22 @@ import { StoreWindowedNotificationCommand } from './domain/commands/store-window
 import { SendWindowedNotificationsCommand } from './domain/commands/send-windowed-notifications-command';
 import { SaveUserCommand } from './domain/commands/save-user-command';
 import { CronExecer } from './domain/port-interfaces/cron-execer';
+import { commandHandlers } from './interface-adapters/controllers/command-handler.decorator';
+import {
+  commandHandlerDirPath,
+  commandHandlerFileSuffix,
+} from './interface-adapters/controllers/command-handler.constants';
 
 const configComposer = new ConfigComposer();
 configComposer.initialize();
 const config = configComposer.composeConfig();
 const container = new Container();
+
+// LOGGER FIRST
+container
+  .bind<boolean>('LoggerPrettify')
+  .toConstantValue(process.env.NODE_ENV !== 'production');
+container.bind<Logger>('Logger').to(Pino).inSingletonScope();
 
 // CONSTANTS
 container
@@ -77,9 +89,6 @@ const kafka = new Kafka({
 container
   .bind<Consumer>('KafkaConsumer')
   .toConstantValue(kafka.consumer({ groupId: config.kafkaGroupId }));
-container
-  .bind<boolean>('LoggerPrettify')
-  .toConstantValue(process.env.NODE_ENV !== 'production');
 container
   .bind<string>('PostgresConnectionString')
   .toConstantValue(config.postgresConnectionString);
@@ -104,8 +113,7 @@ container
 container.bind<BrokerConsumer>('BrokerConsumer').to(KafkaJSConsumer);
 container.bind<CronExecer>('CronExecer').to(Cron);
 
-// DRIVEN ACTORS
-container.bind<Logger>('Logger').to(Pino);
+// DRIVEN ACTORS]
 const commandBus = new CommandBus();
 container
   .bind<CommandDispatcher<CommandMarker>>('CommandDispatcher')
@@ -177,18 +185,15 @@ container
   .to(SaveUserCommandHandler);
 
 // BOOTSTRAP
-[
-  container.get<ICommandHandler<CommandMarker>>(
-    'SendInstantNotificationCommandHandler'
-  ),
-  container.get<ICommandHandler<CommandMarker>>(
-    'StoreWindowedNotificationCommandHandler'
-  ),
-  container.get<ICommandHandler<CommandMarker>>(
-    'SendWindowedNotificationsCommandHandler'
-  ),
-  container.get<ICommandHandler<CommandMarker>>('SaveUserCommandHandler'),
-].forEach((h) => commandBus.registerDecorated(h));
+// Import all command handlers
+fs.readdirSync(`${commandHandlerDirPath}`)
+  .filter((file) => file.includes(commandHandlerFileSuffix))
+  .forEach((file) => {
+    require(`${commandHandlerDirPath}/${file}`);
+  });
+
+// Register all imported command handlers
+commandHandlers.forEach((ch) => commandBus.registerDecorated(ch));
 
 const cron = container.get<CronExecer>('CronExecer');
 cron.onTickSendWindowedNotifications();

@@ -7,10 +7,6 @@ import { injectable } from 'inversify';
 export class CommandBus {
   private registryMap = {};
 
-  register(className: string, handler: ICommandHandler<CommandMarker>): void {
-    this.registryMap[className] = handler;
-  }
-
   registerDecorated(handler: ICommandHandler<CommandMarker>): void {
     const commandClass = Reflect.getMetadata(
       COMMAND_HANDLER_METADATA_COMMAND,

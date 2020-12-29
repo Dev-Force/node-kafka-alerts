@@ -3,3 +3,4 @@ export const COMMAND_HANDLER_METADATA_COMMAND = Symbol(
 );
 
 export const commandHandlerDirPath = __dirname;
+export const commandHandlerFileSuffix = '.command-handler.';
