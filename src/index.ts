@@ -202,7 +202,11 @@ fs.readdirSync(`${commandHandlerDirPath}`)
   });
 
 // Register all imported command handlers
-commandHandlers.forEach((ch) => commandBus.registerDecorated(ch));
+commandHandlers.forEach((ch) => {
+  commandBus.registerDecorated(
+    container.get<ICommandHandler<CommandMarker>>(ch.name)
+  );
+});
 
 const cron = container.get<CronExecer>('CronExecer');
 cron.onTickSendWindowedNotifications();

@@ -6,7 +6,7 @@ export const commandHandlers = [];
 export const CommandHandler = (command: AnyClass): ClassDecorator => {
   // eslint-disable-next-line @typescript-eslint/ban-types
   return (target: Function) => {
-    commandHandlers.push(target.prototype);
+    commandHandlers.push(target);
     Reflect.defineMetadata(COMMAND_HANDLER_METADATA_COMMAND, command, target);
   };
 };
