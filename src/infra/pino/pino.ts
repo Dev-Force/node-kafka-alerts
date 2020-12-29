@@ -7,16 +7,16 @@ export class Pino implements Logger {
   private pino: pino.Logger;
 
   constructor(@inject('LoggerPrettify') prettify: boolean) {
-    const cfg = {
-      prettyPrint: {
-        levelFirst: true,
-        suppressFlushSyncWarning: true,
-      },
-      prettifier: undefined,
-    };
+    let cfg = {};
 
     if (prettify === true) {
-      cfg.prettifier = require('pino-pretty');
+      cfg = {
+        prettyPrint: {
+          levelFirst: true,
+          suppressFlushSyncWarning: true,
+        },
+        prettifier: require('pino-pretty'),
+      };
     }
 
     this.pino = pino(cfg);

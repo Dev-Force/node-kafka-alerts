@@ -85,6 +85,15 @@ container.bind<string>('UserTopic').toConstantValue(config.userTopic);
 const kafka = new Kafka({
   clientId: config.kafkaClientID,
   brokers: [`${config.kafkaHost}:${config.kafkaPort}`],
+  logCreator: () => {
+    return ({ log }) => {
+      const { message, ...extra } = log;
+      container.get<Logger>('Logger').info({
+        message,
+        extra,
+      });
+    };
+  },
 });
 container
   .bind<Consumer>('KafkaConsumer')
