@@ -81,6 +81,7 @@ export class NotificationDataMapper
     notificationRow.message_payload = notification.unmappedData;
     notificationRow.subject = notification.subject;
     notificationRow.template = notification.template;
+    notificationRow.status = notification.status;
     notificationRow.user_uuid = notification.user.uuid;
     notificationRow.uuid = notification.uuid;
     notificationRow.unique_group_identifiers = notification.uniqueGroupIdentifiers.reduce<
