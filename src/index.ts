@@ -16,9 +16,9 @@ import { StoreWindowedNotificationCommandHandler } from './interface-adapters/co
 import { StoreWindowedNotificationUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 import { ConfigComposer } from './infra/config-composer/config-composer';
 import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
-import { NotificationDataMapper } from './interface-adapters/gateways/notification-data-mapper';
-import { UserDataMapper } from './interface-adapters/gateways/user-data-mapper';
-import { TimeWindowDataMapper } from './interface-adapters/gateways/time-window-data-mapper';
+import { NotificationRepository } from './interface-adapters/gateways/notification-repository';
+import { UserRepository } from './interface-adapters/gateways/user-repository';
+import { TimeWindowRepository } from './interface-adapters/gateways/time-window-repository';
 import { Cron } from './infra/cron/cron';
 import { SendWindowedNotificationsCommandHandler } from './interface-adapters/controllers/send-windowed-notifications.command-handler';
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
@@ -59,6 +59,18 @@ import {
   commandHandlerDirPath,
   commandHandlerFileSuffix,
 } from './interface-adapters/controllers/command-handler.constants';
+import { DALMapper } from './interface-adapters/mappers/dal-mapper.interface';
+import { GroupedNotificationRow } from './interface-adapters/gateways/grouped-notification-row';
+import { Notification } from './domain/models/notification';
+import { GroupedNotificationMapper } from './interface-adapters/mappers/grouped-notification-mapper';
+import { NotificationRow } from './interface-adapters/gateways/notification-row';
+import { NotificationMapper } from './interface-adapters/mappers/notification-mapper';
+import { UserRow } from './interface-adapters/gateways/user-row';
+import { User } from './domain/models/user';
+import { UserMapper } from './interface-adapters/mappers/user-mapper';
+import { TimeWindowMapper } from './interface-adapters/mappers/time-window-mapper';
+import { TimeWindow } from './domain/models/time-window';
+import { TimeWindowRow } from './interface-adapters/gateways/time-window-row';
 
 const configComposer = new ConfigComposer();
 configComposer.initialize();
@@ -128,7 +140,10 @@ container
   .bind<CommandDispatcher<CommandMarker>>('CommandDispatcher')
   .toConstantValue(commandBus);
 container.bind<FileReader>('FileReader').to(FSAsync);
-container.bind<EmailSender>('EmailSender').to(SendGridClient);
+container
+  .bind<EmailSender>('EmailSender')
+  .to(SendGridClient)
+  .inSingletonScope();
 container.bind<Compiler>('Compiler').to(HandlebarsCompiler);
 
 // DAOs
@@ -140,20 +155,34 @@ container.bind<NotificationDAO>('NotificationDAO').toConstantValue(knexClient);
 container.bind<UserDAO>('UserDAO').toConstantValue(knexClient);
 container.bind<TimeWindowDAO>('TimeWindowDAO').toConstantValue(knexClient);
 
-// DATA MAPPERS
+// MAPPERS
+container
+  .bind<DALMapper<Notification[], GroupedNotificationRow>>(
+    'DALGroupedNotificationMapper'
+  )
+  .to(GroupedNotificationMapper);
+container
+  .bind<DALMapper<Notification, NotificationRow>>('DALNotificationMapper')
+  .to(NotificationMapper);
+container.bind<DALMapper<User, UserRow>>('DALUserMapper').to(UserMapper);
+container
+  .bind<DALMapper<TimeWindow, TimeWindowRow>>('DALTimeWindowMapper')
+  .to(TimeWindowMapper);
+
+// REPOSITORIES
 container
   .bind<NotificationFetcher>('NotificationFetcher')
-  .to(NotificationDataMapper);
+  .to(NotificationRepository);
 container
   .bind<NotificationCreator>('NotificationCreator')
-  .to(NotificationDataMapper);
+  .to(NotificationRepository);
 container
   .bind<NotificationMutator>('NotificationMutator')
-  .to(NotificationDataMapper);
-container.bind<UserSaver>('UserSaver').to(UserDataMapper);
-container.bind<UserFetcher>('UserFetcher').to(UserDataMapper);
-container.bind<TimeWindowCreator>('TimeWindowCreator').to(TimeWindowDataMapper);
-container.bind<TimeWindowFetcher>('TimeWindowFetcher').to(TimeWindowDataMapper);
+  .to(NotificationRepository);
+container.bind<UserSaver>('UserSaver').to(UserRepository);
+container.bind<UserFetcher>('UserFetcher').to(UserRepository);
+container.bind<TimeWindowCreator>('TimeWindowCreator').to(TimeWindowRepository);
+container.bind<TimeWindowFetcher>('TimeWindowFetcher').to(TimeWindowRepository);
 
 // USE CASES
 container
