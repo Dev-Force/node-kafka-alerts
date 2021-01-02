@@ -14,6 +14,7 @@ import { UserAggregateType } from '../../domain/models/user';
 import { UniqueTimeWindowNotificationError } from '../../domain/errors/unique-time-window-notification-error';
 import { UniqueAggregateUUIDVersionError } from '../../domain/errors/unique-aggregate-uuid-version-error';
 import { injectable } from 'inversify';
+import { UniqueInstantAggregateUUIDVersionError } from '../../domain/errors/unique-instant-aggregate-uuid-version-error';
 
 @injectable()
 export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
@@ -125,13 +126,28 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
         status,
       } = notification;
 
-      await this.knexConn('events').transacting(trx).insert({
-        aggregate_uuid: uuid,
-        aggregate_type: NotificationAggregateType,
-        payload: notification,
-        payload_type: status,
-        version: 1,
-      });
+      await this.knexConn('events')
+        .transacting(trx)
+        .insert({
+          aggregate_uuid: uuid,
+          aggregate_type: NotificationAggregateType,
+          payload: notification,
+          payload_type: status,
+          version: 1,
+        })
+        .catch((e) => {
+          // version and aggregate_uuid unique constraint violation (OCC on notification update).
+          if (
+            e.code === '23505' &&
+            /events_aggregate_uuid_version_key/.test(e.message)
+          ) {
+            throw new UniqueInstantAggregateUUIDVersionError(
+              `Conflict while trying to insert event for instant notification with uuid ${uuid}`
+            );
+          }
+
+          throw e;
+        });
 
       await this.knexConn('notifications')
         .transacting(trx)
@@ -192,9 +208,9 @@ export class KnexClient implements NotificationDAO, UserDAO, TimeWindowDAO {
             e.code === '23505' &&
             /events_aggregate_uuid_version_key/.test(e.message)
           ) {
-            throw new UniqueAggregateUUIDVersionError(`
-              Conflict while trying to insert event for notification with uuid ${uuid}
-            `);
+            throw new UniqueAggregateUUIDVersionError(
+              `Conflict while trying to insert event for windowed notification with uuid ${uuid}`
+            );
           }
 
           throw e;

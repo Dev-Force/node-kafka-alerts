@@ -95,13 +95,19 @@ export class KafkaJSConsumer implements BrokerConsumer {
           } catch (e) {
             // if error is retryable throw error to eachBatch.
             if (isRetryableError(e)) {
-              this.logger.info({ message: `Retryable error: ${e.message}` });
+              this.logger.info({
+                errorType: e.name,
+                message: `Retryable error: ${e.message}`,
+              });
               throw e;
             }
 
             // if error is skippable resolve offset.
             if (isSkippableError(e)) {
-              this.logger.info({ message: `Skippable error: ${e.message}` });
+              this.logger.info({
+                errorType: e.name,
+                message: `Skippable error: ${e.message}`,
+              });
               resolveOffset(message.offset);
               await heartbeat();
               continue;

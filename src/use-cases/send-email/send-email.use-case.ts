@@ -44,9 +44,15 @@ export class SendEmailUseCase
       payload
     );
 
-    this.emailSender.sendEmail(from, to, subject, isHTML, compiledPayload);
+    await this.emailSender.sendEmail(
+      from,
+      to,
+      subject,
+      isHTML,
+      compiledPayload
+    );
 
-    this.notificationCreator.storeNewNotification(
+    await this.notificationCreator.storeNewNotification(
       new Notification(
         notificationUUID,
         new User(userUUID, to, ''),

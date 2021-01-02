@@ -10,9 +10,7 @@ import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
 import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 import { FSAsync } from './infra/fs-async/fs-async';
-import { SendInstantNotificationCommandHandler } from './interface-adapters/controllers/send-instant-notification.command-handler';
 import { KnexClient } from './infra/knex/knex-client';
-import { StoreWindowedNotificationCommandHandler } from './interface-adapters/controllers/store-windowed-notification.command-handler';
 import { StoreWindowedNotificationUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 import { ConfigComposer } from './infra/config-composer/config-composer';
 import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
@@ -20,9 +18,7 @@ import { NotificationRepository } from './interface-adapters/gateways/notificati
 import { UserRepository } from './interface-adapters/gateways/user-repository';
 import { TimeWindowRepository } from './interface-adapters/gateways/time-window-repository';
 import { Cron } from './infra/cron/cron';
-import { SendWindowedNotificationsCommandHandler } from './interface-adapters/controllers/send-windowed-notifications.command-handler';
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
-import { SaveUserCommandHandler } from './interface-adapters/controllers/save-user.command-handler';
 import { SaveUserUseCase } from './use-cases/save-user/save-user.use-case';
 import { Pino } from './infra/pino/pino';
 import { Logger } from './domain/port-interfaces/logger.interface';
@@ -48,11 +44,6 @@ import { UseCaseExecutor } from './use-cases/use-case-executor.interface';
 import { SaveUserPayload } from './use-cases/save-user/save-user-payload';
 import { StoreWindowedNotificationPayload } from './use-cases/store-windowed-notification/store-windowed-notification-payload';
 import { SendEmailPayload } from './use-cases/send-email/send-email-payload';
-import { CommandHandler } from './interface-adapters/controllers/command-handler.interface';
-import { SendInstantNotificationCommand } from './domain/commands/send-instant-notification-command';
-import { StoreWindowedNotificationCommand } from './domain/commands/store-windowed-notification-command';
-import { SendWindowedNotificationsCommand } from './domain/commands/send-windowed-notifications-command';
-import { SaveUserCommand } from './domain/commands/save-user-command';
 import { CronExecer } from './domain/port-interfaces/cron-execer';
 import { commandHandlers } from './interface-adapters/controllers/command-handler.decorator';
 import {
@@ -211,26 +202,6 @@ container
   )
   .to(SendEmailUseCase);
 
-// COMMAND HANDLERS
-container
-  .bind<CommandHandler<SendInstantNotificationCommand>>(
-    Types.SendInstantNotificationCommandHandler
-  )
-  .to(SendInstantNotificationCommandHandler);
-container
-  .bind<CommandHandler<StoreWindowedNotificationCommand>>(
-    Types.StoreWindowedNotificationCommandHandler
-  )
-  .to(StoreWindowedNotificationCommandHandler);
-container
-  .bind<CommandHandler<SendWindowedNotificationsCommand>>(
-    Types.SendWindowedNotificationsCommandHandler
-  )
-  .to(SendWindowedNotificationsCommandHandler);
-container
-  .bind<CommandHandler<SaveUserCommand>>(Types.SaveUserCommandHandler)
-  .to(SaveUserCommandHandler);
-
 // BOOTSTRAP
 // Import all command handlers
 fs.readdirSync(`${commandHandlerDirPath}`)
@@ -241,9 +212,7 @@ fs.readdirSync(`${commandHandlerDirPath}`)
 
 // Register all imported command handlers
 commandHandlers.forEach((ch) => {
-  commandBus.registerDecorated(
-    container.get<CommandHandler<CommandMarker>>(Types[ch.name])
-  );
+  commandBus.registerDecorated(container.resolve(ch));
 });
 
 const cron = container.get<CronExecer>(Types.CronExecer);
