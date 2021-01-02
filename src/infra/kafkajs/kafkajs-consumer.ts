@@ -31,8 +31,6 @@ export class KafkaJSConsumer implements BrokerConsumer {
   }
 
   public async consume(): Promise<void> {
-    this.logger.info({ message: 'test', hello: 'world' });
-
     const {
       consumer,
       instantNotificationTopic,

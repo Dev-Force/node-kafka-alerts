@@ -48,7 +48,7 @@ import { UseCaseExecutor } from './use-cases/use-case-executor.interface';
 import { SaveUserPayload } from './use-cases/save-user/save-user-payload';
 import { StoreWindowedNotificationPayload } from './use-cases/store-windowed-notification/store-windowed-notification-payload';
 import { SendEmailPayload } from './use-cases/send-email/send-email-payload';
-import { ICommandHandler } from './domain/port-interfaces/command-handler.interface';
+import { CommandHandler } from './interface-adapters/controllers/command-handler.interface';
 import { SendInstantNotificationCommand } from './domain/commands/send-instant-notification-command';
 import { StoreWindowedNotificationCommand } from './domain/commands/store-windowed-notification-command';
 import { SendWindowedNotificationsCommand } from './domain/commands/send-windowed-notifications-command';
@@ -213,22 +213,22 @@ container
 
 // COMMAND HANDLERS
 container
-  .bind<ICommandHandler<SendInstantNotificationCommand>>(
+  .bind<CommandHandler<SendInstantNotificationCommand>>(
     Types.SendInstantNotificationCommandHandler
   )
   .to(SendInstantNotificationCommandHandler);
 container
-  .bind<ICommandHandler<StoreWindowedNotificationCommand>>(
+  .bind<CommandHandler<StoreWindowedNotificationCommand>>(
     Types.StoreWindowedNotificationCommandHandler
   )
   .to(StoreWindowedNotificationCommandHandler);
 container
-  .bind<ICommandHandler<SendWindowedNotificationsCommand>>(
+  .bind<CommandHandler<SendWindowedNotificationsCommand>>(
     Types.SendWindowedNotificationsCommandHandler
   )
   .to(SendWindowedNotificationsCommandHandler);
 container
-  .bind<ICommandHandler<SaveUserCommand>>(Types.SaveUserCommandHandler)
+  .bind<CommandHandler<SaveUserCommand>>(Types.SaveUserCommandHandler)
   .to(SaveUserCommandHandler);
 
 // BOOTSTRAP
@@ -242,7 +242,7 @@ fs.readdirSync(`${commandHandlerDirPath}`)
 // Register all imported command handlers
 commandHandlers.forEach((ch) => {
   commandBus.registerDecorated(
-    container.get<ICommandHandler<CommandMarker>>(Types[ch.name])
+    container.get<CommandHandler<CommandMarker>>(Types[ch.name])
   );
 });
 

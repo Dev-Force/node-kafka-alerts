@@ -1,4 +1,4 @@
-import { ICommandHandler } from '../../domain/port-interfaces/command-handler.interface';
+import { CommandHandler } from '../../interface-adapters/controllers/command-handler.interface';
 import { CommandMarker } from '../../domain/commands/command-marker.interface';
 import { COMMAND_HANDLER_METADATA_COMMAND } from '../../interface-adapters/controllers/command-handler.constants';
 import { injectable } from 'inversify';
@@ -7,7 +7,7 @@ import { injectable } from 'inversify';
 export class CommandBus {
   private registryMap = {};
 
-  registerDecorated(handler: ICommandHandler<CommandMarker>): void {
+  registerDecorated(handler: CommandHandler<CommandMarker>): void {
     const commandClass = Reflect.getMetadata(
       COMMAND_HANDLER_METADATA_COMMAND,
       handler.constructor

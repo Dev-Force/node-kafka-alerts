@@ -1,3 +1,3 @@
-export interface ICommandHandler<Command> {
+export interface CommandHandler<Command> {
   handle: (cmd: Command) => Promise<void>;
 }
