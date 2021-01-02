@@ -5,14 +5,15 @@ import { NotificationStatus } from '../../domain/models/notification-status';
 import { NotificationCreator } from '../../domain/port-interfaces/notification-creator.interface';
 import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
 import { inject, injectable } from 'inversify';
+import { Types } from '../../types';
 
 @injectable()
 export class StoreWindowedNotificationUseCase
   implements UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>> {
   constructor(
-    @inject('NotificationCreator')
+    @inject(Types.NotificationCreator)
     private notificationCreator: NotificationCreator,
-    @inject('UserFetcher') private userFetcher: UserFetcher
+    @inject(Types.UserFetcher) private userFetcher: UserFetcher
   ) {}
 
   async execute(

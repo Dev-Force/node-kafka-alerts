@@ -10,19 +10,20 @@ import { isRetryableError } from '../../domain/errors/retryable-error.decorator'
 import { inject, injectable } from 'inversify';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
 import { BrokerConsumer } from '../../domain/port-interfaces/broker-consumer.interface';
+import { Types } from '../../types';
 
 @injectable()
 export class KafkaJSConsumer implements BrokerConsumer {
   constructor(
-    @inject('InstantNotificationTopic')
+    @inject(Types.InstantNotificationTopic)
     private instantNotificationTopic: string,
-    @inject('WindowedNotificationsTopic')
+    @inject(Types.WindowedNotificationsTopic)
     private windowedNotificationsTopic: string,
-    @inject('UserTopic') private userTopic: string,
-    @inject('KafkaConsumer') private consumer: Consumer,
-    @inject('CommandDispatcher')
+    @inject(Types.UserTopic) private userTopic: string,
+    @inject(Types.KafkaConsumer) private consumer: Consumer,
+    @inject(Types.CommandDispatcher)
     private commandBus: CommandDispatcher<CommandMarker>,
-    @inject('Logger') private logger: Logger
+    @inject(Types.Logger) private logger: Logger
   ) {}
 
   public async disconnect(): Promise<void> {

@@ -3,6 +3,7 @@ import { Notification } from '../../domain/models/notification';
 import { NotificationCreator } from '../../domain/port-interfaces/notification-creator.interface';
 import { NotificationFetcher } from '../../domain/port-interfaces/notification-fetcher.interface';
 import { NotificationMutator } from '../../domain/port-interfaces/notification-mutator.interface';
+import { Types } from '../../types';
 import { DALMapper } from '../mappers/dal-mapper.interface';
 import { NotificationMapper } from '../mappers/notification-mapper';
 import { GroupedNotificationRow } from './grouped-notification-row';
@@ -12,10 +13,10 @@ import { NotificationDAO } from './notification-dao.interface';
 export class NotificationRepository
   implements NotificationFetcher, NotificationCreator, NotificationMutator {
   constructor(
-    @inject('NotificationDAO') private notificationDAO: NotificationDAO,
-    @inject('DALNotificationMapper')
+    @inject(Types.NotificationDAO) private notificationDAO: NotificationDAO,
+    @inject(Types.DALNotificationMapper)
     private notificationMapper: NotificationMapper,
-    @inject('DALGroupedNotificationMapper')
+    @inject(Types.DALGroupedNotificationMapper)
     private groupedNotificationMapper: DALMapper<
       Notification[],
       GroupedNotificationRow

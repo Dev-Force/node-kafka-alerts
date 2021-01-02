@@ -1,9 +1,9 @@
 import * as hbs from 'handlebars';
 import { injectable } from 'inversify';
-import { Compiler } from '../../domain/port-interfaces/compiler.interface';
+import { TemplateCompiler } from '../../domain/port-interfaces/template-compiler.interface';
 
 @injectable()
-export class HandlebarsCompiler implements Compiler {
+export class HandlebarsCompiler implements TemplateCompiler {
   compile(template: string, payload: Record<string, unknown>): string {
     const hbsTemplate = hbs.compile(template);
     return hbsTemplate(payload);

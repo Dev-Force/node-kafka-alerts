@@ -3,13 +3,16 @@ import { ConfigTemplate } from '../../domain/models/config-template';
 import { Notification } from '../../domain/models/notification';
 import { NotificationStatus } from '../../domain/models/notification-status';
 import { User } from '../../domain/models/user';
+import { Types } from '../../types';
 import { GroupedNotificationRow } from '../gateways/grouped-notification-row';
 import { DALMapper } from './dal-mapper.interface';
 
 @injectable()
 export class GroupedNotificationMapper
   implements DALMapper<Notification[], GroupedNotificationRow> {
-  constructor(@inject('ConfigTemplates') private templates: ConfigTemplate[]) {}
+  constructor(
+    @inject(Types.ConfigTemplates) private templates: ConfigTemplate[]
+  ) {}
 
   public fromDALEntityToDomain({
     notification_uuids,

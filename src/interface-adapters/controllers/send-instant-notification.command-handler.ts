@@ -6,19 +6,20 @@ import { SendInstantNotificationCommand } from '../../domain/commands/send-insta
 import { ConfigTemplate } from '../../domain/models/config-template';
 import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
 import { inject, injectable } from 'inversify';
+import { Types } from '../../types';
 
 @injectable()
 @CommandHandler(SendInstantNotificationCommand)
 export class SendInstantNotificationCommandHandler
   implements ICommandHandler<SendInstantNotificationCommand> {
   constructor(
-    @inject('SendEmailUseCase')
+    @inject(Types.SendEmailUseCase)
     private sendEmailUsecase: UseCaseExecutor<SendEmailPayload, Promise<void>>,
-    @inject('UserFetcher') private userFetcher: UserFetcher,
-    @inject('TemplateDirPath') private templateDirPath: string,
-    @inject('TemplateExtension') private templateExtension: string,
-    @inject('FromEmail') private fromEmail: string,
-    @inject('ConfigTemplates') private configTemplates: ConfigTemplate[]
+    @inject(Types.UserFetcher) private userFetcher: UserFetcher,
+    @inject(Types.TemplateDirPath) private templateDirPath: string,
+    @inject(Types.TemplateExtension) private templateExtension: string,
+    @inject(Types.FromEmail) private fromEmail: string,
+    @inject(Types.ConfigTemplates) private configTemplates: ConfigTemplate[]
   ) {}
 
   async handle(cmd: SendInstantNotificationCommand): Promise<void> {

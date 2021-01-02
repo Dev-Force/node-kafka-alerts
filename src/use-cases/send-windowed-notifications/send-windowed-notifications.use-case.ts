@@ -7,21 +7,23 @@ import { NotificationFetcher } from '../../domain/port-interfaces/notification-f
 import { NotificationMutator } from '../../domain/port-interfaces/notification-mutator.interface';
 import { inject, injectable } from 'inversify';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
+import { Types } from '../../types';
 
 @injectable()
 export class SendWindowedNotificationsUseCase
   implements UseCaseExecutor<void, Promise<void>> {
   constructor(
-    @inject('TimeWindowCreator') private timeWindowCreator: TimeWindowCreator,
-    @inject('NotificationFetcher')
+    @inject(Types.TimeWindowCreator)
+    private timeWindowCreator: TimeWindowCreator,
+    @inject(Types.NotificationFetcher)
     private notificationFetcher: NotificationFetcher,
-    @inject('NotificationMutator')
+    @inject(Types.NotificationMutator)
     private notificationMutator: NotificationMutator,
-    @inject('CommandDispatcher')
+    @inject(Types.CommandDispatcher)
     private commandDispatcher: CommandDispatcher<
       SendInstantNotificationCommand
     >,
-    @inject('Logger')
+    @inject(Types.Logger)
     private logger: Logger
   ) {}
 

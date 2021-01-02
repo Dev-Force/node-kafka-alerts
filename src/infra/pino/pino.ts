@@ -1,12 +1,13 @@
 import * as pino from 'pino';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
 import { inject, injectable } from 'inversify';
+import { Types } from '../../types';
 
 @injectable()
 export class Pino implements Logger {
   private pino: pino.Logger;
 
-  constructor(@inject('LoggerPrettify') prettify: boolean) {
+  constructor(@inject(Types.LoggerPrettify) prettify: boolean) {
     let cfg = {};
 
     if (prettify === true) {

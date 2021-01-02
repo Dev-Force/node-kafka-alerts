@@ -3,11 +3,12 @@ import { User } from '../../domain/models/user';
 import { SaveUserPayload } from './save-user-payload';
 import { UserSaver } from '../../domain/port-interfaces/user-saver.interface';
 import { inject, injectable } from 'inversify';
+import { Types } from '../../types';
 
 @injectable()
 export class SaveUserUseCase
   implements UseCaseExecutor<SaveUserPayload, Promise<void>> {
-  constructor(@inject('UserSaver') private userSaver: UserSaver) {}
+  constructor(@inject(Types.UserSaver) private userSaver: UserSaver) {}
 
   async execute(saveUserPayload: SaveUserPayload): Promise<void> {
     const { uuid, email, phone } = saveUserPayload;

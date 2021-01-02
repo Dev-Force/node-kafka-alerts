@@ -3,10 +3,11 @@
 import { inject, injectable } from 'inversify';
 import { EmailSender } from '../../domain/port-interfaces/email-sender.interface';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
+import { Types } from '../../types';
 
 @injectable()
 export class MockSendGridClient implements EmailSender {
-  constructor(@inject('Logger') private logger: Logger) {}
+  constructor(@inject(Types.Logger) private logger: Logger) {}
 
   async sendEmail(
     _from: string,

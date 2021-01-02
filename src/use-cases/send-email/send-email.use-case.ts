@@ -1,5 +1,5 @@
 import { UseCaseExecutor } from '../use-case-executor.interface';
-import { Compiler } from '../../domain/port-interfaces/compiler.interface';
+import { TemplateCompiler } from '../../domain/port-interfaces/template-compiler.interface';
 import { EmailSender } from '../../domain/port-interfaces/email-sender.interface';
 import { FileReader } from '../../domain/port-interfaces/file-reader.interface';
 import { SendEmailPayload } from './send-email-payload';
@@ -8,16 +8,17 @@ import { Notification } from '../../domain/models/notification';
 import { User } from '../../domain/models/user';
 import { NotificationStatus } from '../../domain/models/notification-status';
 import { inject, injectable } from 'inversify';
+import { Types } from '../../types';
 
 @injectable()
 export class SendEmailUseCase
   implements UseCaseExecutor<SendEmailPayload, Promise<void>> {
   constructor(
-    @inject('NotificationCreator')
+    @inject(Types.NotificationCreator)
     private notificationCreator: NotificationCreator,
-    @inject('Compiler') private templateCompiler: Compiler,
-    @inject('EmailSender') private emailSender: EmailSender,
-    @inject('FileReader') private fileReader: FileReader
+    @inject(Types.TemplateCompiler) private templateCompiler: TemplateCompiler,
+    @inject(Types.EmailSender) private emailSender: EmailSender,
+    @inject(Types.FileReader) private fileReader: FileReader
   ) {}
 
   async execute(sendEmailPayload: SendEmailPayload): Promise<void> {

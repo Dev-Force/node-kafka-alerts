@@ -32,7 +32,7 @@ import { CommandDispatcher } from './domain/port-interfaces/command-dispatcher.i
 import { CommandMarker } from './domain/commands/command-marker.interface';
 import { FileReader } from './domain/port-interfaces/file-reader.interface';
 import { EmailSender } from './domain/port-interfaces/email-sender.interface';
-import { Compiler } from './domain/port-interfaces/compiler.interface';
+import { TemplateCompiler } from './domain/port-interfaces/template-compiler.interface';
 import { NotificationDAO } from './interface-adapters/gateways/notification-dao.interface';
 import { UserDAO } from './interface-adapters/gateways/user-dao.interface';
 import { TimeWindowDAO } from './interface-adapters/gateways/time-window-dao.interface';
@@ -71,6 +71,7 @@ import { UserMapper } from './interface-adapters/mappers/user-mapper';
 import { TimeWindowMapper } from './interface-adapters/mappers/time-window-mapper';
 import { TimeWindow } from './domain/models/time-window';
 import { TimeWindowRow } from './interface-adapters/gateways/time-window-row';
+import { Types } from './types';
 
 const configComposer = new ConfigComposer();
 configComposer.initialize();
@@ -79,28 +80,28 @@ const container = new Container();
 
 // LOGGER FIRST
 container
-  .bind<boolean>('LoggerPrettify')
+  .bind<boolean>(Types.LoggerPrettify)
   .toConstantValue(process.env.NODE_ENV !== 'production');
-container.bind<Logger>('Logger').to(Pino).inSingletonScope();
+container.bind<Logger>(Types.Logger).to(Pino).inSingletonScope();
 
 // CONSTANTS
 container
-  .bind<string>('EmailSenderAPIKey')
+  .bind<string>(Types.EmailSenderAPIKey)
   .toConstantValue(config.emailSenderAPIKey);
 container
-  .bind<string>('InstantNotificationTopic')
+  .bind<string>(Types.InstantNotificationTopic)
   .toConstantValue(config.instantNotificationTopic);
 container
-  .bind<string>('WindowedNotificationsTopic')
+  .bind<string>(Types.WindowedNotificationsTopic)
   .toConstantValue(config.windowedNotificationTopic);
-container.bind<string>('UserTopic').toConstantValue(config.userTopic);
+container.bind<string>(Types.UserTopic).toConstantValue(config.userTopic);
 const kafka = new Kafka({
   clientId: config.kafkaClientID,
   brokers: [`${config.kafkaHost}:${config.kafkaPort}`],
   logCreator: () => {
     return ({ log }) => {
       const { message, ...extra } = log;
-      container.get<Logger>('Logger').info({
+      container.get<Logger>(Types.Logger).info({
         message,
         extra,
       });
@@ -108,118 +109,126 @@ const kafka = new Kafka({
   },
 });
 container
-  .bind<Consumer>('KafkaConsumer')
+  .bind<Consumer>(Types.KafkaConsumer)
   .toConstantValue(kafka.consumer({ groupId: config.kafkaGroupId }));
 container
-  .bind<string>('PostgresConnectionString')
+  .bind<string>(Types.PostgresConnectionString)
   .toConstantValue(config.postgresConnectionString);
 container
-  .bind<string[]>('DatabaseSchemas')
+  .bind<string[]>(Types.DatabaseSchemas)
   .toConstantValue(config.databaseSchemas);
 container
-  .bind<ConfigTemplate[]>('ConfigTemplates')
+  .bind<ConfigTemplate[]>(Types.ConfigTemplates)
   .toConstantValue(config.templates);
 container
-  .bind<string>('TemplateDirPath')
+  .bind<string>(Types.TemplateDirPath)
   .toConstantValue(path.join(__dirname, '..', config.templatePath));
 container
-  .bind<string>('TemplateExtension')
+  .bind<string>(Types.TemplateExtension)
   .toConstantValue(config.templateExtension);
-container.bind<string>('FromEmail').toConstantValue(config.fromEmail);
+container.bind<string>(Types.FromEmail).toConstantValue(config.fromEmail);
 container
-  .bind<string>('CronExpression')
+  .bind<string>(Types.CronExpression)
   .toConstantValue(config.sendWindowedNotificationsCronExpression);
 
 // PRIMARY ACTORS
-container.bind<BrokerConsumer>('BrokerConsumer').to(KafkaJSConsumer);
-container.bind<CronExecer>('CronExecer').to(Cron);
+container.bind<BrokerConsumer>(Types.BrokerConsumer).to(KafkaJSConsumer);
+container.bind<CronExecer>(Types.CronExecer).to(Cron);
 
-// DRIVEN ACTORS]
+// DRIVEN ACTORS
 const commandBus = new CommandBus();
 container
-  .bind<CommandDispatcher<CommandMarker>>('CommandDispatcher')
+  .bind<CommandDispatcher<CommandMarker>>(Types.CommandDispatcher)
   .toConstantValue(commandBus);
-container.bind<FileReader>('FileReader').to(FSAsync);
+container.bind<FileReader>(Types.FileReader).to(FSAsync);
 container
-  .bind<EmailSender>('EmailSender')
+  .bind<EmailSender>(Types.EmailSender)
   .to(SendGridClient)
   .inSingletonScope();
-container.bind<Compiler>('Compiler').to(HandlebarsCompiler);
+container.bind<TemplateCompiler>(Types.TemplateCompiler).to(HandlebarsCompiler);
 
 // DAOs
 const knexClient = new KnexClient(
   config.postgresConnectionString,
   config.databaseSchemas
 );
-container.bind<NotificationDAO>('NotificationDAO').toConstantValue(knexClient);
-container.bind<UserDAO>('UserDAO').toConstantValue(knexClient);
-container.bind<TimeWindowDAO>('TimeWindowDAO').toConstantValue(knexClient);
+container
+  .bind<NotificationDAO>(Types.NotificationDAO)
+  .toConstantValue(knexClient);
+container.bind<UserDAO>(Types.UserDAO).toConstantValue(knexClient);
+container.bind<TimeWindowDAO>(Types.TimeWindowDAO).toConstantValue(knexClient);
 
 // MAPPERS
 container
   .bind<DALMapper<Notification[], GroupedNotificationRow>>(
-    'DALGroupedNotificationMapper'
+    Types.DALGroupedNotificationMapper
   )
   .to(GroupedNotificationMapper);
 container
-  .bind<DALMapper<Notification, NotificationRow>>('DALNotificationMapper')
+  .bind<DALMapper<Notification, NotificationRow>>(Types.DALNotificationMapper)
   .to(NotificationMapper);
-container.bind<DALMapper<User, UserRow>>('DALUserMapper').to(UserMapper);
+container.bind<DALMapper<User, UserRow>>(Types.DALUserMapper).to(UserMapper);
 container
-  .bind<DALMapper<TimeWindow, TimeWindowRow>>('DALTimeWindowMapper')
+  .bind<DALMapper<TimeWindow, TimeWindowRow>>(Types.DALTimeWindowMapper)
   .to(TimeWindowMapper);
 
 // REPOSITORIES
 container
-  .bind<NotificationFetcher>('NotificationFetcher')
+  .bind<NotificationFetcher>(Types.NotificationFetcher)
   .to(NotificationRepository);
 container
-  .bind<NotificationCreator>('NotificationCreator')
+  .bind<NotificationCreator>(Types.NotificationCreator)
   .to(NotificationRepository);
 container
-  .bind<NotificationMutator>('NotificationMutator')
+  .bind<NotificationMutator>(Types.NotificationMutator)
   .to(NotificationRepository);
-container.bind<UserSaver>('UserSaver').to(UserRepository);
-container.bind<UserFetcher>('UserFetcher').to(UserRepository);
-container.bind<TimeWindowCreator>('TimeWindowCreator').to(TimeWindowRepository);
-container.bind<TimeWindowFetcher>('TimeWindowFetcher').to(TimeWindowRepository);
+container.bind<UserSaver>(Types.UserSaver).to(UserRepository);
+container.bind<UserFetcher>(Types.UserFetcher).to(UserRepository);
+container
+  .bind<TimeWindowCreator>(Types.TimeWindowCreator)
+  .to(TimeWindowRepository);
+container
+  .bind<TimeWindowFetcher>(Types.TimeWindowFetcher)
+  .to(TimeWindowRepository);
 
 // USE CASES
 container
-  .bind<UseCaseExecutor<SaveUserPayload, Promise<void>>>('SaveUserUseCase')
+  .bind<UseCaseExecutor<SaveUserPayload, Promise<void>>>(Types.SaveUserUseCase)
   .to(SaveUserUseCase);
 container
   .bind<UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>>>(
-    'StoreWindowedNotificationUseCase'
+    Types.StoreWindowedNotificationUseCase
   )
   .to(StoreWindowedNotificationUseCase);
 container
   .bind<UseCaseExecutor<void, Promise<void>>>(
-    'SendWindowedNotificationsUseCase'
+    Types.SendWindowedNotificationsUseCase
   )
   .to(SendWindowedNotificationsUseCase);
 container
-  .bind<UseCaseExecutor<SendEmailPayload, Promise<void>>>('SendEmailUseCase')
+  .bind<UseCaseExecutor<SendEmailPayload, Promise<void>>>(
+    Types.SendEmailUseCase
+  )
   .to(SendEmailUseCase);
 
 // COMMAND HANDLERS
 container
   .bind<ICommandHandler<SendInstantNotificationCommand>>(
-    'SendInstantNotificationCommandHandler'
+    Types.SendInstantNotificationCommandHandler
   )
   .to(SendInstantNotificationCommandHandler);
 container
   .bind<ICommandHandler<StoreWindowedNotificationCommand>>(
-    'StoreWindowedNotificationCommandHandler'
+    Types.StoreWindowedNotificationCommandHandler
   )
   .to(StoreWindowedNotificationCommandHandler);
 container
   .bind<ICommandHandler<SendWindowedNotificationsCommand>>(
-    'SendWindowedNotificationsCommandHandler'
+    Types.SendWindowedNotificationsCommandHandler
   )
   .to(SendWindowedNotificationsCommandHandler);
 container
-  .bind<ICommandHandler<SaveUserCommand>>('SaveUserCommandHandler')
+  .bind<ICommandHandler<SaveUserCommand>>(Types.SaveUserCommandHandler)
   .to(SaveUserCommandHandler);
 
 // BOOTSTRAP
@@ -233,15 +242,15 @@ fs.readdirSync(`${commandHandlerDirPath}`)
 // Register all imported command handlers
 commandHandlers.forEach((ch) => {
   commandBus.registerDecorated(
-    container.get<ICommandHandler<CommandMarker>>(ch.name)
+    container.get<ICommandHandler<CommandMarker>>(Types[ch.name])
   );
 });
 
-const cron = container.get<CronExecer>('CronExecer');
+const cron = container.get<CronExecer>(Types.CronExecer);
 cron.onTickSendWindowedNotifications();
 cron.startNewCronJob();
 
-const brokerConsumer = container.get<BrokerConsumer>('BrokerConsumer');
+const brokerConsumer = container.get<BrokerConsumer>(Types.BrokerConsumer);
 brokerConsumer.consume();
 
 // const expressApp = new ExpressServer(commandBus);
