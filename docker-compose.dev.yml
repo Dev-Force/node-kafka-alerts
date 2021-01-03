@@ -10,6 +10,7 @@ services:
       - /app/node_modules/
     ports:
       - 3000:3000
+      - 9229:9229
     depends_on: 
       - kafka
       - connect
