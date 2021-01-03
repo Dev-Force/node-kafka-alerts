@@ -6,8 +6,10 @@ import { NotificationCreator } from '../../domain/port-interfaces/notification-c
 import { UserFetcher } from '../../domain/port-interfaces/user-fetcher.interface';
 import { inject, injectable } from 'inversify';
 import { Types } from '../../types';
+import { UseCase } from '../use-case.decorator';
 
 @injectable()
+@UseCase(Types.StoreWindowedNotificationUseCase)
 export class StoreWindowedNotificationUseCase
   implements UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>> {
   constructor(

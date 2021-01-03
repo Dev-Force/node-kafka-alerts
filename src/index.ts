@@ -2,24 +2,21 @@ import 'reflect-metadata';
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as glob from 'glob';
 
 import { Consumer, Kafka } from 'kafkajs';
 
 import { CommandBus } from './infra/buses/command-bus';
-import { SendEmailUseCase } from './use-cases/send-email/send-email.use-case';
 import { KafkaJSConsumer } from './infra/kafkajs/kafkajs-consumer';
 import { HandlebarsCompiler } from './infra/handlebars/handlebars-compiler';
 import { FSAsync } from './infra/fs-async/fs-async';
 import { KnexClient } from './infra/knex/knex-client';
-import { StoreWindowedNotificationUseCase } from './use-cases/store-windowed-notification/store-windowed-notification.use-case';
 import { ConfigComposer } from './infra/config-composer/config-composer';
-import { SendWindowedNotificationsUseCase } from './use-cases/send-windowed-notifications/send-windowed-notifications.use-case';
 import { NotificationRepository } from './interface-adapters/gateways/notification-repository';
 import { UserRepository } from './interface-adapters/gateways/user-repository';
 import { TimeWindowRepository } from './interface-adapters/gateways/time-window-repository';
 import { Cron } from './infra/cron/cron';
 import { SendGridClient } from './infra/sendgrid/sendgrid-client';
-import { SaveUserUseCase } from './use-cases/save-user/save-user.use-case';
 import { Pino } from './infra/pino/pino';
 import { Logger } from './domain/port-interfaces/logger.interface';
 import { Container } from 'inversify';
@@ -40,12 +37,8 @@ import { UserSaver } from './domain/port-interfaces/user-saver.interface';
 import { UserFetcher } from './domain/port-interfaces/user-fetcher.interface';
 import { TimeWindowCreator } from './domain/port-interfaces/time-window-creator.interface';
 import { TimeWindowFetcher } from './domain/port-interfaces/time-window-fetcher.interface';
-import { UseCaseExecutor } from './use-cases/use-case-executor.interface';
-import { SaveUserPayload } from './use-cases/save-user/save-user-payload';
-import { StoreWindowedNotificationPayload } from './use-cases/store-windowed-notification/store-windowed-notification-payload';
-import { SendEmailPayload } from './use-cases/send-email/send-email-payload';
 import { CronExecer } from './domain/port-interfaces/cron-execer';
-import { commandHandlers } from './interface-adapters/controllers/command-handler.decorator';
+import { commandHandlerRegistry } from './interface-adapters/controllers/command-handler.decorator';
 import {
   commandHandlerDirPath,
   commandHandlerFileSuffix,
@@ -63,6 +56,12 @@ import { TimeWindowMapper } from './interface-adapters/mappers/time-window-mappe
 import { TimeWindow } from './domain/models/time-window';
 import { TimeWindowRow } from './interface-adapters/gateways/time-window-row';
 import { Types } from './types';
+import {
+  useCaseDirPath,
+  useCaseFileSuffix,
+  USE_CASE_METADATA_SYMBOL,
+} from './use-cases/use-case.constants';
+import { useCaseRegistry } from './use-cases/use-case.decorator';
 
 const configComposer = new ConfigComposer();
 configComposer.initialize();
@@ -183,24 +182,18 @@ container
   .to(TimeWindowRepository);
 
 // USE CASES
-container
-  .bind<UseCaseExecutor<SaveUserPayload, Promise<void>>>(Types.SaveUserUseCase)
-  .to(SaveUserUseCase);
-container
-  .bind<UseCaseExecutor<StoreWindowedNotificationPayload, Promise<void>>>(
-    Types.StoreWindowedNotificationUseCase
-  )
-  .to(StoreWindowedNotificationUseCase);
-container
-  .bind<UseCaseExecutor<void, Promise<void>>>(
-    Types.SendWindowedNotificationsUseCase
-  )
-  .to(SendWindowedNotificationsUseCase);
-container
-  .bind<UseCaseExecutor<SendEmailPayload, Promise<void>>>(
-    Types.SendEmailUseCase
-  )
-  .to(SendEmailUseCase);
+// Import all use cases
+glob
+  .sync(`${useCaseDirPath}/**/*${useCaseFileSuffix}*`, { dot: true })
+  .forEach((uc) => {
+    require(uc);
+  });
+
+// Bind all use cases to respective classes
+useCaseRegistry.forEach((uc) => {
+  const useCaseSymbolType = Reflect.getMetadata(USE_CASE_METADATA_SYMBOL, uc);
+  container.bind(useCaseSymbolType).to(uc);
+});
 
 // BOOTSTRAP
 // Import all command handlers
@@ -211,7 +204,7 @@ fs.readdirSync(`${commandHandlerDirPath}`)
   });
 
 // Register all imported command handlers
-commandHandlers.forEach((ch) => {
+commandHandlerRegistry.forEach((ch) => {
   commandBus.registerDecorated(container.resolve(ch));
 });
 

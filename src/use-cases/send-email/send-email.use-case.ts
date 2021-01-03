@@ -9,8 +9,10 @@ import { User } from '../../domain/models/user';
 import { NotificationStatus } from '../../domain/models/notification-status';
 import { inject, injectable } from 'inversify';
 import { Types } from '../../types';
+import { UseCase } from '../use-case.decorator';
 
 @injectable()
+@UseCase(Types.SendEmailUseCase)
 export class SendEmailUseCase
   implements UseCaseExecutor<SendEmailPayload, Promise<void>> {
   constructor(

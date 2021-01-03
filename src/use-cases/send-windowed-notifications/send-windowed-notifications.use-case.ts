@@ -8,8 +8,10 @@ import { NotificationMutator } from '../../domain/port-interfaces/notification-m
 import { inject, injectable } from 'inversify';
 import { Logger } from '../../domain/port-interfaces/logger.interface';
 import { Types } from '../../types';
+import { UseCase } from '../use-case.decorator';
 
 @injectable()
+@UseCase(Types.SendWindowedNotificationsUseCase)
 export class SendWindowedNotificationsUseCase
   implements UseCaseExecutor<void, Promise<void>> {
   constructor(
